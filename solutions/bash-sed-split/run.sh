@@ -22,6 +22,17 @@ sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.af | s
 sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.ag | sort > ../../data/bash-sed-split.parsed.ag &
 sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.ah | sort > ../../data/bash-sed-split.parsed.ah &
 
+# -n               suppress printing
+# s                substitute
+# ^.*              anything before `"title": "`
+# \"title\": \"    initial search match
+# \(               start capture group
+# [^\"]*           capture everything until the next double quote
+# \)               end capture group
+# .*$              anything after the capture group, to the end of the line
+# \1               substitute everything with the 1st capture group
+# p                print it
+
 # wait for above commands to finish
 wait
 
