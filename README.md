@@ -26,12 +26,13 @@ This repo is my playground for implementing many solutions for a given CPU & IO 
 
 ## The problem
 
-Given a local filesystem copy of the ["works dump"](https://openlibrary.org/developers/dumps) data set (~2.0GB compressed) from [openlibrary.org](https://openlibrary.org/) in TSV format, perform the following actions as quickly as possible:
+Given a local filesystem copy of the ["works dump"](https://openlibrary.org/developers/dumps) data set (~2.0GB compressed) from [openlibrary.org](https://openlibrary.org/) in TSV format, perform the following actions as quickly as possible (TBC):
 
 - Parse the file (TSV, JSON)
 - Transform the data (i.e. MapReduce) and output the following as separate TSV files:
-  - jjj
-  - kkkk
+  - A sorted unique list of Authors
+  - A sorted unique list of Titles
+  - ...
 
 ## Data format
 
@@ -72,3 +73,11 @@ REF: https://openlibrary.org/type/work
 #### Backreferences
 
 - editions from /type/edition.works
+
+### /type/author_role
+
+#### Properties
+
+- author of type /type/author
+- role of type /type/string
+- as of type /type/string
