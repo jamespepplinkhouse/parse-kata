@@ -26,10 +26,28 @@ This repo is my playground for implementing many solutions for a given CPU & IO 
 Given a local filesystem copy of the ["works dump"](https://openlibrary.org/developers/dumps) data set (~2.0GB compressed) from [openlibrary.org](https://openlibrary.org/) in TSV format, perform the following actions as quickly as possible (TBC):
 
 - Parse the file (TSV, JSON)
-- Transform the data (i.e. MapReduce) and output the following as separate TSV files:
-  - A sorted unique list of Authors
-  - A sorted unique list of Titles
-  - ...
+- Extract the title of each work
+- Sort A-Z
+- Write to a text file, with one title per line
+
+### Notes & ideas
+
+- At the time of writing, the `ol_dump_works_2021-11-30.txt` file contains 24,010,896 lines (13GB)
+- Solutions should not attempt to load the whole input or output in memory (use streams)!
+- Try a bash solution as a starting reference point (e.g. sed & sort)
+
+### Approach 1
+
+- [Main thread] Establish a worker pool, matching the CPUs in the system
+- [Main thread] Read the input file stream in chunks
+- [Main thread] Queue the chunks as jobs for processing
+- [Worker thread] Extract the title values
+- [Worker thread] Sort into letter buckets (i.e. all of the A records together)
+- [Worker thread] Return the results to [Main thread]
+- [Main thread] Append results to temporary files, one for each letter
+- [Main thread] Queue temp files as jobs for sorting
+- [Worker thread] Sort a temp file
+- [Main thread] Concatenate for final output
 
 ## Data format
 
@@ -66,15 +84,3 @@ REF: https://openlibrary.org/type/work
 - notes of type /type/text
 - cover_edition of type /type/edition
 - covers[] of type /type/int
-
-#### Backreferences
-
-- editions from /type/edition.works
-
-### /type/author_role
-
-#### Properties
-
-- author of type /type/author
-- role of type /type/string
-- as of type /type/string
