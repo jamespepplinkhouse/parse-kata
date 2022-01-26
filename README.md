@@ -20,9 +20,6 @@ This repo is my playground for implementing many solutions for a given CPU & IO 
 - Improve each solution over time by profiling and optimisation
 - Multiple implementations using the same programming language is encouraged
 - Capture performance metrics ([hyperfine](https://github.com/sharkdp/hyperfine))
-  - CPU usage
-  - Memory usage
-  - Run time
 
 ## The problem
 
