@@ -15,7 +15,7 @@ Notes:
 - I considered `jq` but we'd still need to use `sed` to parse out the first part of each line; will try `jq` later
 - The memory usage of `sed` is amazingly small, it's only a handful of MB, starting with 1.9MB
 - `sort` takes 4.66GB of RAM
-- The output file has 24,010,895 lines, which is off by one...
+- The output file has 24,010,895 lines (908MB), which is off by one...
 
 ## bash-sed-split
 
@@ -30,7 +30,7 @@ Notes:
 
 - After splitting the file into chunks to match the number of CPU cores, uses sed commands concurrently; the sort at the end is a single CPU
 - Using 8 CPUs averages out to 334% over the whole program
-- The output file has 24,010,895 lines, which is off by one...
+- The output file has 24,010,895 lines (908MB), which is off by one...
 - This approach is wasteful as the input data is read/written multiple times
   - split
   - sed
