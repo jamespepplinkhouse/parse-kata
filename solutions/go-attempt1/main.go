@@ -43,7 +43,7 @@ func main() {
 
 	for scanner.Scan() {
 		// fmt.Println(ParseLine(scanner.Bytes()))
-		_, _ = datawriter.WriteString(ParseLine(scanner.Bytes()) + "\n")
+		_, _ = datawriter.WriteString(ParseLineRaw(scanner.Bytes()) + "\n")
 	}
 
 	if err := scanner.Err(); err != nil {
