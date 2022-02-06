@@ -6,15 +6,13 @@ import (
 	"github.com/valyala/fastjson"
 )
 
-// 24 seconds
-func ParseLineJson(line []byte) (title string) {
+func ParseLineJson(line []byte) (title []byte) {
 	jsonStartIndex := bytes.Index(line, []byte("{"))
-	return fastjson.GetString(line[jsonStartIndex:], "title")
+	return fastjson.GetBytes(line[jsonStartIndex:], "title")
 }
 
-// 7.35 seconds
-func ParseLineRaw(line []byte) (title string) {
+func ParseLineRaw(line []byte) (title []byte) {
 	titleStart := bytes.Index(line, []byte("\"title\": \"")) + 10
 	titleEnd := titleStart + bytes.Index(line[titleStart:], []byte("\""))
-	return string(line[titleStart:titleEnd])
+	return line[titleStart:titleEnd]
 }

@@ -27,7 +27,7 @@ func main() {
 	}
 	defer input.Close()
 
-	// Output output setup
+	// Output file setup
 	output, err := os.OpenFile(outputFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatalf("Failed creating output file: %s", err)
@@ -41,9 +41,11 @@ func main() {
 	buf := make([]byte, maxCapacity)
 	scanner.Buffer(buf, maxCapacity)
 
+	newLine := []byte("\n")
+
 	for scanner.Scan() {
-		// fmt.Println(ParseLine(scanner.Bytes()))
-		_, _ = datawriter.WriteString(ParseLineRaw(scanner.Bytes()) + "\n")
+		_, _ = datawriter.Write(ParseLineRaw(scanner.Bytes()))
+		datawriter.Write(newLine)
 	}
 
 	if err := scanner.Err(); err != nil {
