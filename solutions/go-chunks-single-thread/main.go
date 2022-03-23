@@ -7,9 +7,11 @@ import (
 	"io"
 	"log"
 	"os"
+
+	"github.com/pkg/profile"
 )
 
-const chunkSize = 524288000 // 500MB
+const chunkSize = 134217728 // 128MB
 
 func main() {
 	defer profile.Start(profile.ProfilePath(".")).Stop()
@@ -53,7 +55,7 @@ func main() {
 		}
 
 		lines := bytes.Split(inputBuffer[:bytesRead], newLine)
-		fmt.Println("Found %d lines", len(lines))
+		fmt.Println("Found lines:", len(lines))
 		// keep the tail
 
 		titles := make([]byte, 0)

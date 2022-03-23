@@ -1,3 +1,4 @@
 data/
 **/parse-kata*
 *.pprof
+*.png

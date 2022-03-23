@@ -5,9 +5,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/pkg/profile"
 )
 
 func main() {
+	defer profile.Start(profile.ProfilePath(".")).Stop()
+
 	args := os.Args[1:]
 	if len(args) != 2 {
 		log.Fatal("Incorrect arguments supplied")

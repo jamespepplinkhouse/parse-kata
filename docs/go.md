@@ -5,7 +5,7 @@
 ### Install dependencies
 
 ```sh
-brew install graphviz
+brew install graphviz # needed for interactive web
 go get -u github.com/google/pprof
 ```
 
@@ -17,5 +17,6 @@ go get -u github.com/google/pprof
 ### Analyse profile
 
 ```sh
-go tool pprof -http :8080 ./cpu.pprof
+go tool pprof -http :8080 ./cpu.pprof # web
+go tool pprof -png ./cpu.pprof # generate a png
 ```
