@@ -17,18 +17,17 @@ func ParseLineJson(line []byte) (title []byte) {
 }
 
 func ParseLineRaw(line []byte) (title []byte) {
-	titleStart := bytes.Split(line, []byte("\"title\": \""))
+	_, after, found := bytes.Cut(line, []byte("\"title\": \""))
 
-	if len(titleStart) <= 1 {
+	if !found {
 		return nil
 	}
 
-	titleLength := bytes.Index(titleStart[1], []byte("\""))
+	before, _, found := bytes.Cut(after, []byte("\""))
 
-	if titleLength == -1 {
+	if !found {
 		return nil
 	}
 
-	return titleStart[1][:titleLength]
-
+	return before
 }
