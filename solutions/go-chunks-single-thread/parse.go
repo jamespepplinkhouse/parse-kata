@@ -4,18 +4,19 @@ import (
 	"bytes"
 )
 
-func ParseLineRaw(line []byte) (title []byte) {
-	_, after, found := bytes.Cut(line, []byte("\"title\": \""))
+func ParseChunk(chunk []byte) (titles []byte, tail []byte) {
+	// newLine := []byte("\n")
+	_, after, found := bytes.Cut(chunk, []byte("\"title\": \""))
 
 	if !found {
-		return nil
+		return make([]byte, 0), make([]byte, 0)
 	}
 
 	before, _, found := bytes.Cut(after, []byte("\""))
 
 	if !found {
-		return nil
+		return make([]byte, 0), make([]byte, 0)
 	}
 
-	return before
+	return before, make([]byte, 0)
 }

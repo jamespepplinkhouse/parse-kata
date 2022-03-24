@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io"
 	"log"
@@ -45,8 +44,7 @@ func main() {
 	defer output.Close()
 
 	inputBuffer := make([]byte, chunkSize)
-	newLine := []byte("\n")
-	// previousPartialLine := make([]byte, 0)
+	var lastTail = make([]byte, 0)
 
 	for {
 		bytesRead, err := input.Read(inputBuffer)
@@ -54,21 +52,13 @@ func main() {
 			log.Fatal(err)
 		}
 
-		lines := bytes.Split(inputBuffer[:bytesRead], newLine)
-		fmt.Println("Found lines:", len(lines))
-		// keep the tail
+		chunk := append(lastTail, inputBuffer[:bytesRead]...)
+		titles, tail := ParseChunk(chunk)
+		lastTail = tail
 
-		titles := make([]byte, 0)
-		for _, line := range lines {
-			title := ParseLineRaw(line)
-
-			if title != nil {
-				titles = append(titles, title...)
-				titles = append(titles, newLine...)
-			}
+		if len(titles) > 0 {
+			_, _ = datawriter.Write(titles)
 		}
-
-		_, _ = datawriter.Write(titles)
 
 		if err == io.EOF {
 			break
