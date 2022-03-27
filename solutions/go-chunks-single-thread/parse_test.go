@@ -7,6 +7,6 @@ var line = []byte(`/type/work	/works/OL10000049W	3	2010-04-28T06:54:19.472104	{"
 // 21 ns/op
 func BenchmarkParseLineRaw(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		ParseLineRaw(line)
+		ParseChunk(line)
 	}
 }

@@ -17,9 +17,8 @@ func main() {
 
 	args := os.Args[1:]
 	if len(args) != 2 {
-		log.Fatal("Incorrect arguments supplied")
+		log.Fatal("First arg is input file; second arg is output file")
 	}
-	// TODO: be more specific, or use a library
 
 	inputFile := args[0]
 	outputFile := args[1]
@@ -53,8 +52,8 @@ func main() {
 		}
 
 		chunk := append(lastTail, inputBuffer[:bytesRead]...)
-		titles, tail := ParseChunk(chunk)
-		lastTail = tail
+		titles, _ := ParseChunk(chunk)
+		// lastTail = tail
 
 		if len(titles) > 0 {
 			_, _ = datawriter.Write(titles)
