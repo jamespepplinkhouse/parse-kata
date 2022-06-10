@@ -11,12 +11,15 @@ public class Program
 
     var title = new Regex("title\": \"(.+?)\"");
 
-    foreach (var line in File.ReadLines(inputFilePath))
+    using (var outputFile = new StreamWriter(outputFilePath))
     {
-      var matches = title.Match(line);
-      if (matches.Groups.Count > 1)
+      foreach (var line in File.ReadLines(inputFilePath))
       {
-        Console.WriteLine(matches.Groups[1].Captures.First());
+        var matches = title.Match(line);
+        if (matches.Groups.Count > 1)
+        {
+          outputFile.WriteLine(matches.Groups[1].Captures.First());
+        }
       }
     }
   }
