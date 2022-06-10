@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+cd "$(dirname "$0")"
 
 sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/input.txt > ../../data/bash-sed-output.txt
 

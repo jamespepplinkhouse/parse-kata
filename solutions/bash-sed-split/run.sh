@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+cd "$(dirname "$0")"
 
 input=../../data/input.txt
 num_files=$(sysctl -n hw.ncpu)
@@ -37,7 +39,7 @@ sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.ah > .
 wait
 
 # join & sort
-cat ../../data/bash-sed-split.parsed.aa ../../data/bash-sed-split.parsed.ab ../../data/bash-sed-split.parsed.ac ../../data/bash-sed-split.parsed.ad ../../data/bash-sed-split.parsed.ae ../../data/bash-sed-split.parsed.af ../../data/bash-sed-split.parsed.ag ../../data/bash-sed-split.parsed.ah | sort > ../../data/bash-sed-split-output.txt
+cat ../../data/bash-sed-split.parsed.aa ../../data/bash-sed-split.parsed.ab ../../data/bash-sed-split.parsed.ac ../../data/bash-sed-split.parsed.ad ../../data/bash-sed-split.parsed.ae ../../data/bash-sed-split.parsed.af ../../data/bash-sed-split.parsed.ag ../../data/bash-sed-split.parsed.ah > ../../data/bash-sed-split-output.txt
 
 # clean up
 rm ../../data/bash-sed-split.a*
