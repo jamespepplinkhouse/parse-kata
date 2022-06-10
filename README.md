@@ -33,7 +33,7 @@ Given a local filesystem copy of the ["works dump"](https://openlibrary.org/deve
 
 - At the time of writing, the `ol_dump_works_2021-11-30.txt` file contains 24,010,896 lines (13GB)
 - Solutions should not attempt to load the whole input or output in memory (use streams)!
-- Try a bash solution as a starting reference point (e.g. sed & sort)
+- Try a bash solution as a starting reference point (e.g. sed)
 - There are data quality issues, like leading spaces, or single quotes around titles, but for this exercise I'll just keep it raw; fixing that stuff is busy work that's not important
 
 ## Data format
