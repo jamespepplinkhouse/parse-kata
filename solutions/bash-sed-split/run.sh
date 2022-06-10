@@ -13,14 +13,14 @@ echo "lines_per_file: $lines_per_file"
 split -l ${lines_per_file} $input ../../data/bash-sed-split.
 
 # extract titles concurrently
-sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.aa | sort > ../../data/bash-sed-split.parsed.aa &
-sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.ab | sort > ../../data/bash-sed-split.parsed.ab &
-sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.ac | sort > ../../data/bash-sed-split.parsed.ac &
-sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.ad | sort > ../../data/bash-sed-split.parsed.ad &
-sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.ae | sort > ../../data/bash-sed-split.parsed.ae &
-sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.af | sort > ../../data/bash-sed-split.parsed.af &
-sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.ag | sort > ../../data/bash-sed-split.parsed.ag &
-sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.ah | sort > ../../data/bash-sed-split.parsed.ah &
+sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.aa > ../../data/bash-sed-split.parsed.aa &
+sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.ab > ../../data/bash-sed-split.parsed.ab &
+sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.ac > ../../data/bash-sed-split.parsed.ac &
+sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.ad > ../../data/bash-sed-split.parsed.ad &
+sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.ae > ../../data/bash-sed-split.parsed.ae &
+sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.af > ../../data/bash-sed-split.parsed.af &
+sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.ag > ../../data/bash-sed-split.parsed.ag &
+sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/bash-sed-split.ah > ../../data/bash-sed-split.parsed.ah &
 
 # -n               suppress printing
 # s                substitute

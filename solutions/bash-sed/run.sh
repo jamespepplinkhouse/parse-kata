@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/input.txt | sort > ../../data/bash-sed-output.txt
+sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/input.txt > ../../data/bash-sed-output.txt
 
 # -n               suppress printing
 # s                substitute
