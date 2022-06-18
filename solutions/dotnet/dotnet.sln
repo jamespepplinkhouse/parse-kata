@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParseKata", "ParseKata\ParseKata.csproj", "{D2B9C285-FB93-4D18-977F-3F7C3D745518}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParseKata.Tests", "ParseKata.Tests\ParseKata.Tests.csproj", "{B1A77E0C-C89F-4ABF-95C6-9AF15D80DB7A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D2B9C285-FB93-4D18-977F-3F7C3D745518}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2B9C285-FB93-4D18-977F-3F7C3D745518}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2B9C285-FB93-4D18-977F-3F7C3D745518}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2B9C285-FB93-4D18-977F-3F7C3D745518}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1A77E0C-C89F-4ABF-95C6-9AF15D80DB7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1A77E0C-C89F-4ABF-95C6-9AF15D80DB7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1A77E0C-C89F-4ABF-95C6-9AF15D80DB7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1A77E0C-C89F-4ABF-95C6-9AF15D80DB7A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

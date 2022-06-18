@@ -10,6 +10,19 @@ dotnet --list-sdks
 dotnet tool install --global dotnet-trace -a arm64
 ```
 
+## Project Setup
+
+```sh
+dotnet new sln -o dotnet
+cd dotnet
+dotnet new classlib -o ParseKata
+mv ./ParseKata/Class1.cs ./ParseKata/ParseKata.cs
+dotnet sln add ./ParseKata/ParseKata.csproj
+dotnet new xunit -o ParseKata.Tests
+dotnet add ./ParseKata.Tests/ParseKata.Tests.csproj reference ./ParseKata/ParseKata.csproj
+dotnet sln add ./ParseKata.Tests/ParseKata.Tests.csproj
+```
+
 ## Building / Running
 
 ```sh
