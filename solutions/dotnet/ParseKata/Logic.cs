@@ -1,9 +1,10 @@
+namespace ParseKata;
+
 using System.Text;
 
 public static class Logic
 {
-
-  private static byte[] TitleBytes = Encoding.ASCII.GetBytes("title: \"");
+  private static byte[] TitleBytes = Encoding.ASCII.GetBytes("title\": \"");
   private static byte QuoteByte = Encoding.ASCII.GetBytes("\"")[0];
   private static byte NewLineByte = Encoding.ASCII.GetBytes("\n")[0];
 
@@ -61,6 +62,7 @@ public static class Logic
             break;
           }
         }
+        titles.Add(NewLineByte);
       }
     }
 
