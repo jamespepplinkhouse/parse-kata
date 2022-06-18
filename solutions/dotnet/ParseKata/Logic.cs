@@ -32,7 +32,7 @@ public static class Logic
       var foundTitleField = true;
       for (int j = 0; j < TitleBytes.Length; j++)
       {
-        if (chunk[i] != TitleBytes[j])
+        if (i < chunk.Length && chunk[i] != TitleBytes[j])
         {
           foundTitleField = false;
           break;
@@ -44,13 +44,14 @@ public static class Logic
         }
         else
         {
+          foundTitleField = false;
           break;
         }
       }
 
       if (foundTitleField)
       {
-        while (chunk[i] != QuoteByte)
+        while (i < chunk.Length && chunk[i] != QuoteByte)
         {
           titles.Add(chunk[i]);
           if (i < chunk.Length)
