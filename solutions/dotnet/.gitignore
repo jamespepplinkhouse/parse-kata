@@ -23,3 +23,4 @@ bld/
 [Oo]bj/
 
 trace*
+ParseKata.Benchmark/BenchmarkDotNet.Artifacts

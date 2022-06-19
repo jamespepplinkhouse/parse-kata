@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParseKata", "ParseKata\Pars
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParseKata.Tests", "ParseKata.Tests\ParseKata.Tests.csproj", "{B1A77E0C-C89F-4ABF-95C6-9AF15D80DB7A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParseKata.Benchmark", "ParseKata.Benchmark\ParseKata.Benchmark.csproj", "{D7B592CB-B188-46ED-BF3C-64FB1B0DEA73}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{B1A77E0C-C89F-4ABF-95C6-9AF15D80DB7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1A77E0C-C89F-4ABF-95C6-9AF15D80DB7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1A77E0C-C89F-4ABF-95C6-9AF15D80DB7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7B592CB-B188-46ED-BF3C-64FB1B0DEA73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7B592CB-B188-46ED-BF3C-64FB1B0DEA73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7B592CB-B188-46ED-BF3C-64FB1B0DEA73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7B592CB-B188-46ED-BF3C-64FB1B0DEA73}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
