@@ -1,9 +1,5 @@
-﻿using System;
-using System.Security.Cryptography;
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using ParseKata;
-using System.Text;
 
 namespace ParseKata.Benchmark
 {
