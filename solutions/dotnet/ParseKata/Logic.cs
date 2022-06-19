@@ -7,27 +7,15 @@ public static class Logic
   private static byte[] TitleBytes = Encoding.ASCII.GetBytes("title\": \"");
   private static byte QuoteByte = Encoding.ASCII.GetBytes("\"")[0];
   private static byte NewLineByte = Encoding.ASCII.GetBytes("\n")[0];
+  private const int MAX_BUFFER = 1048576;
 
-  public static byte[] ExtractTitles(byte[] chunk)
+  public static Span<byte> ExtractTitles(byte[] chunk)
   {
-    var titles = new List<byte>();
+    var titles = new byte[MAX_BUFFER];
+    int cursor = 0;
 
     for (int i = 0; i < chunk.Length; i++)
     {
-      // If it's a new newline, skip ahead
-      if (chunk[i] == NewLineByte)
-      {
-        if (i + 49 < chunk.Length)
-        {
-          i = i + 49;
-          continue;
-        }
-        else
-        {
-          break;
-        }
-      }
-
       // Try to match title field bytes
       var foundTitleField = true;
       for (int j = 0; j < TitleBytes.Length; j++)
@@ -53,7 +41,9 @@ public static class Logic
       {
         while (i < chunk.Length && chunk[i] != QuoteByte)
         {
-          titles.Add(chunk[i]);
+          titles[cursor] = chunk[i];
+          cursor++;
+
           if (i < chunk.Length)
           {
             i++;
@@ -63,11 +53,12 @@ public static class Logic
             break;
           }
         }
-        titles.Add(NewLineByte);
+        titles[cursor] = NewLineByte;
+        cursor++;
       }
     }
 
-    return titles.ToArray();
+    return titles.AsSpan().Slice(0, cursor);
   }
 }
 

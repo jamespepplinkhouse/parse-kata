@@ -17,7 +17,7 @@ namespace ParseKata.Benchmark
     }
 
     [Benchmark]
-    public byte[] ExtractTitles() => Logic.ExtractTitles(this.TitleBytes);
+    public Span<byte> ExtractTitles() => Logic.ExtractTitles(this.TitleBytes);
 
   }
 
