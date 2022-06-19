@@ -12,19 +12,17 @@ public static class Logic
   public static Span<byte> ExtractTitles(byte[] chunk)
   {
     var titles = new byte[MAX_BUFFER];
+    var titleSearch = new BoyerMoore(TitleBytes);
+    var titleStartIndexes = titleSearch.SearchAll(chunk);
     int cursor = 0;
 
-    for (int i = 0; i < chunk.Length; i++)
+    foreach (var titleIndex in titleStartIndexes)
     {
-      // Try to match title field bytes
-      var foundTitleField = true;
-      for (int j = 0; j < TitleBytes.Length; j++)
+      int i = titleIndex + TitleBytes.Length;
+      while (chunk[i] != QuoteByte)
       {
-        if (i < chunk.Length && chunk[i] != TitleBytes[j])
-        {
-          foundTitleField = false;
-          break;
-        }
+        titles[cursor] = chunk[i];
+        cursor++;
 
         if (i < chunk.Length)
         {
@@ -32,30 +30,11 @@ public static class Logic
         }
         else
         {
-          foundTitleField = false;
           break;
         }
       }
-
-      if (foundTitleField)
-      {
-        while (i < chunk.Length && chunk[i] != QuoteByte)
-        {
-          titles[cursor] = chunk[i];
-          cursor++;
-
-          if (i < chunk.Length)
-          {
-            i++;
-          }
-          else
-          {
-            break;
-          }
-        }
-        titles[cursor] = NewLineByte;
-        cursor++;
-      }
+      titles[cursor] = NewLineByte;
+      cursor++;
     }
 
     return titles.AsSpan().Slice(0, cursor);
