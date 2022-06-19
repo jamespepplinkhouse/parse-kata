@@ -13,31 +13,55 @@ public static class Logic
   {
     var titles = new byte[MAX_BUFFER];
     var titleSearch = new BoyerMoore(TitleBytes);
-    var titleStartIndexes = titleSearch.SearchAll(chunk);
-    int cursor = 0;
+    var quoteSearch = new BoyerMoore(new byte[QuoteByte]);
+    int chunkIndex = 0;
+    int titlesCursor = 0;
 
-    foreach (var titleIndex in titleStartIndexes)
+    while (chunkIndex < chunk.Length)
     {
-      int i = titleIndex + TitleBytes.Length;
-      while (chunk[i] != QuoteByte)
+      var titleStartIndex = titleSearch.Search(chunk, chunkIndex);
+      if (titleStartIndex > 0)
       {
-        titles[cursor] = chunk[i];
-        cursor++;
+        var endQuoteIndex = quoteSearch.Search(chunk, titleStartIndex + TitleBytes.Length);
 
-        if (i < chunk.Length)
+        if (endQuoteIndex > 0)
         {
-          i++;
+          // copy from titleStartIndex + TitleBytes.Length to endQuoteIndex
+
+          // int i = titleStartIndex + TitleBytes.Length;
+          // while (chunk[i] != QuoteByte)
+          // {
+          //   titles[titlesCursor] = chunk[i];
+          //   titlesCursor++;
+
+          //   if (i < chunk.Length)
+          //   {
+          //     i++;
+          //   }
+          //   else
+          //   {
+          //     break;
+          //   }
+          // }
+          // titles[titlesCursor] = NewLineByte;
+          // titlesCursor++;
+
+          chunkIndex = endQuoteIndex;
         }
         else
         {
+          // take to the end of the chunk
           break;
         }
       }
-      titles[cursor] = NewLineByte;
-      cursor++;
+      else
+      {
+        // No more titles found
+        break;
+      }
     }
 
-    return titles.AsSpan().Slice(0, cursor);
+    return titles.AsSpan().Slice(0, titlesCursor);
   }
 }
 
