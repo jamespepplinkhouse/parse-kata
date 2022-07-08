@@ -1,4 +1,11 @@
 ﻿const int MAX_BUFFER = 1048576;
+
+if (args.Length < 1)
+  throw new Exception("First parameter (inputFilePath) not supplied");
+
+if (args.Length < 2)
+  throw new Exception("Second parameter (outputFilePath) not supplied");
+
 var inputFilePath = args[0];
 var outputFilePath = args[1];
 
