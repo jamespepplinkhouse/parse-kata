@@ -11,54 +11,39 @@ public static class Logic
 
   public static Span<byte> ExtractTitles(byte[] chunk)
   {
+    var chunkSpan = chunk.AsSpan();
+    var chunkLength = chunkSpan.Length;
+    int chunkCursor = 0;
+
     var titles = new byte[MAX_BUFFER];
-    int cursor = 0;
+    int titlesCursor = 0;
+    int titleBytesLength = TitleBytes.Length;
 
-    for (int i = 0; i < chunk.Length; i++)
+    while (chunkCursor < chunkLength)
     {
-      // Try to match title field bytes
-      var foundTitleField = true;
-      for (int j = 0; j < TitleBytes.Length; j++)
-      {
-        if (i < chunk.Length && chunk[i] != TitleBytes[j])
-        {
-          foundTitleField = false;
-          break;
-        }
+      var searchSpan = chunkSpan.Slice(chunkCursor, chunkLength - chunkCursor);
+      var nextTitleFieldIndex = searchSpan.IndexOf(TitleBytes);
+      if (nextTitleFieldIndex == -1) break;
 
-        if (i < chunk.Length)
-        {
-          i++;
-        }
-        else
-        {
-          foundTitleField = false;
-          break;
-        }
+      chunkCursor = chunkCursor + nextTitleFieldIndex + titleBytesLength;
+      var titleSpan = chunkSpan.Slice(chunkCursor, chunkLength - chunkCursor);
+      var titleEndIndex = titleSpan.IndexOf(QuoteByte);
+      if (titleEndIndex == -1) break;
+
+      var title = titleSpan.Slice(0, titleEndIndex);
+      for (int i = 0; i < title.Length; i++)
+      {
+        titles[titlesCursor] = title[i];
+        titlesCursor++;
       }
 
-      if (foundTitleField)
-      {
-        while (i < chunk.Length && chunk[i] != QuoteByte)
-        {
-          titles[cursor] = chunk[i];
-          cursor++;
+      titles[titlesCursor] = NewLineByte;
+      titlesCursor++;
 
-          if (i < chunk.Length)
-          {
-            i++;
-          }
-          else
-          {
-            break;
-          }
-        }
-        titles[cursor] = NewLineByte;
-        cursor++;
-      }
+      chunkCursor = chunkCursor + titleEndIndex + 50;
     }
 
-    return titles.AsSpan().Slice(0, cursor);
+    return titles.AsSpan().Slice(0, titlesCursor);
   }
 }
 
