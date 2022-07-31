@@ -3,13 +3,13 @@ set -e
 ROOT=$(pwd)
 
 echo 
-echo "--> Building dotnet solution"
+echo -e "\033[0;33mBuilding dotnet solution\033[0m"
 echo
 cd $ROOT/solutions/dotnet/ParseKata
 time dotnet build --configuration Release
 
 echo 
-echo "--> Building go solution"
+echo -e "\033[0;33mBuilding go solution\033[0m"
 echo
 cd $ROOT/solutions/go
 time go build -v
