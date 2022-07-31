@@ -2,7 +2,10 @@
 set -e
 cd "$(dirname "$0")"
 
-sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" ../../data/input.txt > ../../data/bash-sed-output.txt
+if [ -z ${1+x} ]; then echo "First parameter (input file path) not supplied"; exit 1; fi
+if [ -z ${2+x} ]; then echo "Second parameter (ouput file path) not supplied"; exit 1; fi
+
+sed -n "s/^.*\"title\": \"\([^\"]*\)\".*$/\1/p" $1 > $2
 
 # -n               suppress printing
 # s                substitute
