@@ -4,7 +4,7 @@ using System.Text;
 
 public static class Logic
 {
-  private static byte[] TitleBytes = Encoding.ASCII.GetBytes("title\": \"");
+  private static byte[] TitleBytes = Encoding.ASCII.GetBytes("\"title\": \"");
   private static byte QuoteByte = Encoding.ASCII.GetBytes("\"")[0];
   private static byte NewLineByte = Encoding.ASCII.GetBytes("\n")[0];
   private const int MAX_BUFFER = 1048576;
