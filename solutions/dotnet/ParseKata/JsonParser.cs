@@ -51,4 +51,9 @@ class Work
 {
   [JsonPropertyName("title")]
   public string Title { get; set; }
+
+  public Work()
+  {
+    Title = "";
+  }
 }

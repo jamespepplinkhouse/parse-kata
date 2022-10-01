@@ -3,14 +3,17 @@ using System.Text;
 
 public class CustomParser
 {
-  private CommandLine.ParserResult<Options> _options { get; set; }
-  public CustomParser(CommandLine.ParserResult<Options> options)
+  private CommandLine.ParserResult<Options>? _options { get; set; }
+  public CustomParser(CommandLine.ParserResult<Options>? options)
   {
     this._options = options;
   }
 
   public void Parse()
   {
+    if (this._options == null)
+      throw new Exception("options are not set");
+
     using (var outputFile = new FileStream(this._options.Value.OutputFilePath, FileMode.Create))
     using (var fs = File.Open(this._options.Value.InputFilePath, FileMode.Open, FileAccess.Read))
     using (var bs = new BufferedStream(fs))

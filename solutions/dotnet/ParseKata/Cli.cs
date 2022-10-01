@@ -3,6 +3,12 @@ using CommandLine;
 
 public class Options
 {
+  public Options()
+  {
+    InputFilePath = "";
+    OutputFilePath = "";
+  }
+
   [Option('i', "inputFilePath", Required = true, HelpText = "Input file path")]
   public string InputFilePath { get; set; }
 
