@@ -9,9 +9,15 @@
       return 1;
 
     if (options.Value.Fast)
+    {
+      Console.WriteLine("Using the custom parser");
       new CustomParser(options).Parse();
+    }
     else
+    {
+      Console.WriteLine("Using the JSON parser");
       new JsonParser(options).Parse();
+    }
 
     return 0;
   }

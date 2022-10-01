@@ -14,10 +14,16 @@ diff samples/10mb-output.txt data/10mb-bash-sed.txt | diffstat
 solutions/bash-sed/run.sh samples/10mb-input.txt data/10mb-bash-sed.txt
 
 echo 
-echo -e "\033[0;33mdotnet\033[0m"
+echo -e "\033[0;33mdotnet json\033[0m"
 echo
-solutions/dotnet/ParseKata/bin/Release/net7.0/ParseKata samples/10mb-input.txt data/10mb-dotnet.txt
-diff samples/10mb-output.txt data/10mb-dotnet.txt | diffstat
+solutions/dotnet/ParseKata/bin/Release/net7.0/ParseKata -i samples/10mb-input.txt -o data/10mb-dotnet-json.txt
+diff samples/10mb-output.txt data/10mb-dotnet-json.txt | diffstat
+
+echo 
+echo -e "\033[0;33mdotnet custom\033[0m"
+echo
+solutions/dotnet/ParseKata/bin/Release/net7.0/ParseKata -i samples/10mb-input.txt -o data/10mb-dotnet-custom.txt -f
+diff samples/10mb-output.txt data/10mb-dotnet-custom.txt | diffstat
 
 echo 
 echo -e "\033[0;33mgo\033[0m"
