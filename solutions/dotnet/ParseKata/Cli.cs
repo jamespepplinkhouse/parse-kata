@@ -1,6 +1,7 @@
+namespace ParseKata;
 using CommandLine;
 
-class Options
+public class Options
 {
   [Option('i', "inputFilePath", Required = true, HelpText = "Input file path")]
   public string InputFilePath { get; set; }

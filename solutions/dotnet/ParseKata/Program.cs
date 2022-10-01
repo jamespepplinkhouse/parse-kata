@@ -1,4 +1,6 @@
-﻿class ParseKata
+﻿namespace ParseKata;
+
+class Program
 {
   private const int MAX_BUFFER = 1048576;
 

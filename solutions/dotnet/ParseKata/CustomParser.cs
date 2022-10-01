@@ -1,6 +1,7 @@
+namespace ParseKata;
 using System.Text;
 
-class CustomParser
+public class CustomParser
 {
   private CommandLine.ParserResult<Options> _options { get; set; }
   public CustomParser(CommandLine.ParserResult<Options> options)
@@ -31,7 +32,7 @@ class CustomParser
   private static byte NewLineByte = Encoding.ASCII.GetBytes("\n")[0];
   private const int MAX_BUFFER = 1048576;
 
-  private Span<byte> ExtractTitles(byte[] chunk)
+  public Span<byte> ExtractTitles(byte[] chunk)
   {
     var chunkSpan = chunk.AsSpan();
     var chunkLength = chunkSpan.Length;
