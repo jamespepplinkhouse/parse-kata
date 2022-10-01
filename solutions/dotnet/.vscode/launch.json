@@ -12,7 +12,9 @@
       // If you have changed target frameworks, make sure to update the program path.
       "program": "${workspaceFolder}/ParseKata/bin/Debug/net7.0/ParseKata.dll",
       "args": [
+        "-i",
         "${workspaceFolder}/../../samples/1mb.txt",
+        "-o",
         "${workspaceFolder}/../../data/dotnet-debug.txt"
       ],
       "cwd": "${workspaceFolder}/ParseKata",
