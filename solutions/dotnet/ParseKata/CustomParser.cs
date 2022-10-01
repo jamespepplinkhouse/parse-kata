@@ -1,14 +1,37 @@
 using System.Text;
 
-public static class CustomParser
+class CustomParser
 {
+  private CommandLine.ParserResult<Options> _options { get; set; }
+  public CustomParser(CommandLine.ParserResult<Options> options)
+  {
+    this._options = options;
+  }
+
+  public void Parse()
+  {
+    using (var outputFile = new FileStream(this._options.Value.OutputFilePath, FileMode.Create))
+    using (var fs = File.Open(this._options.Value.InputFilePath, FileMode.Open, FileAccess.Read))
+    using (var bs = new BufferedStream(fs))
+    {
+      var buffer = new byte[MAX_BUFFER];
+      var bytesRead = 0;
+
+      while ((bytesRead = bs.Read(buffer, 0, MAX_BUFFER)) != 0)
+      {
+        var titles = this.ExtractTitles(buffer);
+        outputFile.Write(titles);
+      }
+    }
+  }
+
   private static byte[] TitleBytesMarker = Encoding.ASCII.GetBytes("\"title\": \"");
   private static byte QuoteByte = Encoding.ASCII.GetBytes("\"")[0];
   private static byte EscapeByte = Encoding.ASCII.GetBytes("\\")[0];
   private static byte NewLineByte = Encoding.ASCII.GetBytes("\n")[0];
   private const int MAX_BUFFER = 1048576;
 
-  public static Span<byte> ExtractTitles(byte[] chunk)
+  private Span<byte> ExtractTitles(byte[] chunk)
   {
     var chunkSpan = chunk.AsSpan();
     var chunkLength = chunkSpan.Length;
@@ -97,6 +120,3 @@ public static class CustomParser
     return titles.AsSpan().Slice(0, titlesCursor);
   }
 }
-
-
-
