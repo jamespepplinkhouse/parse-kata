@@ -1,8 +1,6 @@
-namespace ParseKata;
-
 using System.Text;
 
-public static class Logic
+public static class CustomParser
 {
   private static byte[] TitleBytesMarker = Encoding.ASCII.GetBytes("\"title\": \"");
   private static byte QuoteByte = Encoding.ASCII.GetBytes("\"")[0];

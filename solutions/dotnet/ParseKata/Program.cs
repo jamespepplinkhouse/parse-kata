@@ -18,7 +18,7 @@ using (var bs = new BufferedStream(fs))
 
   while ((bytesRead = bs.Read(buffer, 0, MAX_BUFFER)) != 0)
   {
-    var titles = ParseKata.Logic.ExtractTitles(buffer);
+    var titles = CustomParser.ExtractTitles(buffer);
     outputFile.Write(titles);
   }
 }
