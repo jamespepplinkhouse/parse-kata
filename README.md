@@ -9,31 +9,35 @@ This repo is my playground for implementing many solutions for a given CPU & IO 
 - To learn many programming languages
 - To maintain and upgrade the code over time, as new enhancements become available ("live with the tools")
 - To focus on efficiency and performance
-- To explore concurrency patterns and implementations
+- To explore performance, efficiency, concurrency patterns and implementations
 - To explore debugging and performance profiling tools for each language
 - For fun!
 
 ## Project Goals
 
 - Prefer the idiomatic style of each language (this is part of the learning)
-- Get the results as fast as possible
+- Compute the result as fast as possible
+- Use Unit Tests
 - Improve each solution over time by profiling and optimisation
 - Multiple implementations using the same programming language is encouraged
-- Capture performance metrics ([hyperfine](https://github.com/sharkdp/hyperfine) | `time` command ??)
+- Capture performance metrics
 
 ## The problem
 
 Given a local filesystem copy of the ["works dump"](https://openlibrary.org/developers/dumps) data set (~2.0GB compressed) from [openlibrary.org](https://openlibrary.org/) in TSV format, perform the following actions as quickly as possible (TBC):
 
-- Parse the file (TSV, JSON)
+- Parse the file, which is TSV, and has a JSON structure as the last column of each line
 - Extract the title of each work
-- Write to a text file, with one title per line (any order)
+- Write the titles to a text file, with one title per line, in the exact order of the input file
+
+Note: Sample input and correct output data is provided in the `samples/` directory.
 
 ### Notes & ideas
 
 - At the time of writing, the `ol_dump_works_2021-11-30.txt` file contains 24,010,896 lines (13GB)
 - Solutions should not attempt to load the whole input or output in memory (use streams)!
 - Try a bash solution as a starting reference point (e.g. sed)
+- THere are unicode characters, those should be converted to UTF-8
 - There are data quality issues, like leading spaces, or single quotes around titles, but for this exercise I'll just keep it raw; fixing that stuff is busy work that's not important
 
 ## Data format
