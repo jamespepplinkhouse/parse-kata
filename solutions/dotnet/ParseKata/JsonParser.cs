@@ -2,7 +2,7 @@ namespace ParseKata;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-class JsonParser
+public class JsonParser
 {
   private Options _options { get; set; }
   public JsonParser(Options options)
@@ -36,14 +36,18 @@ class JsonParser
           continue;
         }
 
-        var work = JsonSerializer.Deserialize<Work>(
-          line.AsSpan().Slice(jsonStartIndex, line.Length - jsonStartIndex)
-        );
-
-        if (work != null)
-          writer.WriteLine(work.Title);
+        var title = this.ExtractTitle(line.AsSpan().Slice(jsonStartIndex, line.Length - jsonStartIndex));
+        writer.WriteLine();
       }
     }
+  }
+  public string ExtractTitle(System.ReadOnlySpan<char> rawJson)
+  {
+    var work = JsonSerializer.Deserialize<Work>(
+      rawJson
+    );
+
+    return (work != null) ? work.Title : string.Empty;
   }
 }
 
