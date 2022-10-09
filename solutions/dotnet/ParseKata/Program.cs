@@ -13,12 +13,12 @@ class Program
     if (options.Value.Fast)
     {
       Console.WriteLine("Using the custom parser");
-      new CustomParser(options).Parse();
+      new CustomParser(options.Value).Parse();
     }
     else
     {
       Console.WriteLine("Using the JSON parser");
-      new JsonParser(options).Parse();
+      new JsonParser(options.Value).Parse();
     }
 
     return 0;

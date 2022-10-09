@@ -3,8 +3,8 @@ using System.Text;
 
 public class CustomParser
 {
-  private CommandLine.ParserResult<Options>? _options { get; set; }
-  public CustomParser(CommandLine.ParserResult<Options>? options)
+  private Options _options { get; set; }
+  public CustomParser(Options options)
   {
     this._options = options;
   }
@@ -14,8 +14,8 @@ public class CustomParser
     if (this._options == null)
       throw new Exception("options are not set");
 
-    using (var outputFile = new FileStream(this._options.Value.OutputFilePath, FileMode.Create))
-    using (var fs = File.Open(this._options.Value.InputFilePath, FileMode.Open, FileAccess.Read))
+    using (var outputFile = new FileStream(this._options.OutputFilePath, FileMode.Create))
+    using (var fs = File.Open(this._options.InputFilePath, FileMode.Open, FileAccess.Read))
     using (var bs = new BufferedStream(fs))
     {
       var buffer = new byte[MAX_BUFFER];

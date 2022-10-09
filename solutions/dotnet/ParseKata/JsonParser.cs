@@ -4,17 +4,17 @@ using System.Text.Json.Serialization;
 
 class JsonParser
 {
-  private CommandLine.ParserResult<Options> _options { get; set; }
-  public JsonParser(CommandLine.ParserResult<Options> options)
+  private Options _options { get; set; }
+  public JsonParser(Options options)
   {
     this._options = options;
   }
 
   public void Parse()
   {
-    using (StreamWriter writer = new StreamWriter(this._options.Value.OutputFilePath))
+    using (StreamWriter writer = new StreamWriter(this._options.OutputFilePath))
     {
-      foreach (var line in File.ReadLines(this._options.Value.InputFilePath))
+      foreach (var line in File.ReadLines(this._options.InputFilePath))
       {
         // Find the index of the fourth tab character
         var jsonStartIndex = 0;

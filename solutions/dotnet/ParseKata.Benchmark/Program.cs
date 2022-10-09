@@ -15,7 +15,7 @@ namespace ParseKata.Benchmark
     [Benchmark]
     public Span<byte> ExtractTitles()
     {
-      var parser = new CustomParser(null);
+      var parser = new CustomParser(new Options());
       return parser.ExtractTitles(this.TitleBytes);
     }
   }
