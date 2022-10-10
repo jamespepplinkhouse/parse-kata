@@ -5,6 +5,7 @@ import * as fs from 'fs'
 import events from 'events'
 import * as readline from 'node:readline/promises'
 import { parseLine } from './helpers'
+import { resolve } from 'path'
 
 const execute = async () => {
   const { inputFilePath, outputFilePath } = yargs(hideBin(process.argv))
@@ -21,11 +22,11 @@ const execute = async () => {
     .argv as { inputFilePath: string, outputFilePath: string }
 
   const rl = readline.createInterface({
-    input: fs.createReadStream(inputFilePath),
+    input: fs.createReadStream(resolve(inputFilePath)),
     crlfDelay: Infinity
   })
 
-  const writeStream = fs.createWriteStream(outputFilePath)
+  const writeStream = fs.createWriteStream(resolve(outputFilePath))
   writeStream.on('error', (error) => {
     console.error(error)
     throw error

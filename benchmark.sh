@@ -2,10 +2,10 @@
 set -e
 
 hyperfine --warmup 3 \
-    'solutions/bash-jq/run.sh samples/10mb-input.txt data/10mb-bash-jq.txt' \
-    'solutions/bash-sed/run.sh samples/10mb-input.txt data/10mb-bash-sed.txt' \
-    'solutions/dotnet/ParseKata/bin/Release/net7.0/ParseKata -i samples/10mb-input.txt -o data/10mb-dotnet.txt' \
-    'solutions/dotnet/ParseKata/bin/Release/net7.0/ParseKata -i samples/10mb-input.txt -o data/10mb-dotnet.txt -f' \
-    'solutions/go/parse-kata samples/10mb-input.txt data/10mb-go.txt'
-    'solutions/nodejs/build/index.js samples/10mb-input.txt data/10mb-nodejs.txt'
+    -n bash-jq 'solutions/bash-jq/run.sh samples/10mb-input.txt data/10mb-bash-jq.txt' \
+    -n bash-sed 'solutions/bash-sed/run.sh samples/10mb-input.txt data/10mb-bash-sed.txt' \
+    -n dotnet-json 'solutions/dotnet/ParseKata/bin/Release/net7.0/ParseKata -i samples/10mb-input.txt -o data/10mb-dotnet.txt' \
+    -n dotnet-custom 'solutions/dotnet/ParseKata/bin/Release/net7.0/ParseKata -i samples/10mb-input.txt -o data/10mb-dotnet.txt -f' \
+    -n golang 'solutions/go/parse-kata samples/10mb-input.txt data/10mb-go.txt' \
+    -n nodejs 'solutions/nodejs/build/index.js -i samples/10mb-input.txt -o data/10mb-nodejs.txt'
 
