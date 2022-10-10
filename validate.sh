@@ -30,3 +30,9 @@ echo -e "\033[0;33mgo\033[0m"
 echo
 solutions/go/parse-kata samples/10mb-input.txt data/10mb-go.txt
 diff samples/10mb-output.txt data/10mb-go.txt | diffstat
+
+echo 
+echo -e "\033[0;33mNode.js\033[0m"
+echo
+solutions/nodejs/build/index.js samples/10mb-input.txt data/10mb-nodejs.txt
+diff samples/10mb-output.txt data/10mb-nodejs.txt | diffstat

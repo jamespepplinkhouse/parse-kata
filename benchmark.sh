@@ -7,4 +7,5 @@ hyperfine --warmup 3 \
     'solutions/dotnet/ParseKata/bin/Release/net7.0/ParseKata -i samples/10mb-input.txt -o data/10mb-dotnet.txt' \
     'solutions/dotnet/ParseKata/bin/Release/net7.0/ParseKata -i samples/10mb-input.txt -o data/10mb-dotnet.txt -f' \
     'solutions/go/parse-kata samples/10mb-input.txt data/10mb-go.txt'
+    'solutions/nodejs/build/index.js samples/10mb-input.txt data/10mb-nodejs.txt'
 

@@ -13,3 +13,9 @@ echo -e "\033[0;33mBuilding go solution\033[0m"
 echo
 cd $ROOT/solutions/go
 time go build -v
+
+echo 
+echo -e "\033[0;33mBuilding Node.js solution\033[0m"
+echo
+cd $ROOT/solutions/nodejs
+time yarn build
