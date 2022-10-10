@@ -10,11 +10,11 @@ public class JsonParser
     this._options = options;
   }
 
-  public async void Parse()
+  public void Parse()
   {
     using (StreamWriter writer = new StreamWriter(this._options.OutputFilePath))
     {
-      await foreach (var line in File.ReadLinesAsync(this._options.InputFilePath))
+      foreach (var line in File.ReadLines(this._options.InputFilePath))
       {
         // Find the index of the fourth tab character
         var jsonStartIndex = 0;
@@ -37,7 +37,7 @@ public class JsonParser
         }
 
         var title = this.ExtractTitle(line.AsSpan().Slice(jsonStartIndex, line.Length - jsonStartIndex));
-        await writer.WriteLineAsync(title);
+        writer.WriteLine(title);
       }
     }
   }
