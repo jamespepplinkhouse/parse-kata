@@ -1,0 +1,30 @@
+{
+  "name": "parse-kata",
+  "version": "0.0.1",
+  "description": "Parse Kata Node.js implementation",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && chmod +x ./build/index.js",
+    "start": "ts-node src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jamespepplinkhouse/parse-kata.git"
+  },
+  "author": "James Pepplinkhouse",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jamespepplinkhouse/parse-kata/issues"
+  },
+  "homepage": "https://github.com/jamespepplinkhouse/parse-kata#readme",
+  "devDependencies": {
+    "@types/node": "18",
+    "@types/yargs": "^17.0.13",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "yargs": "^17.6.0"
+  }
+}
