@@ -37,7 +37,7 @@ public class JsonParser
         }
 
         var title = this.ExtractTitle(line.AsSpan().Slice(jsonStartIndex, line.Length - jsonStartIndex));
-        writer.WriteLine();
+        writer.WriteLine(title);
       }
     }
   }
