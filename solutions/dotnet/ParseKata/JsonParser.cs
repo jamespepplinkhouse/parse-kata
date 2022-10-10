@@ -41,6 +41,7 @@ public class JsonParser
       }
     }
   }
+
   public string ExtractTitle(System.ReadOnlySpan<char> rawJson)
   {
     var work = JsonSerializer.Deserialize<Work>(
