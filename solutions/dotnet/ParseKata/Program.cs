@@ -2,24 +2,18 @@
 
 class Program
 {
-  private const int MAX_BUFFER = 1048576;
-
   static int Main(string[] args)
   {
     var options = CommandLine.Parser.Default.ParseArguments<Options>(args);
     if (options.Errors.Count() > 0)
       return 1;
 
+    Console.WriteLine("Using the {0} parser", options.Value.Fast ? "custom" : "JSON");
+
     if (options.Value.Fast)
-    {
-      Console.WriteLine("Using the custom parser");
       new CustomParser(options.Value).Parse();
-    }
     else
-    {
-      Console.WriteLine("Using the JSON parser");
       new JsonParser(options.Value).Parse();
-    }
 
     return 0;
   }
