@@ -1,16 +1,7 @@
 export const parseLine = (chunk: string): string => {
-  var jsonStartIndex = 0
+  const jsonStartIndex = chunk.indexOf("{");
 
-  for (let i = 0; i < 4; i++) {
-    var newIndex = chunk.indexOf('\t', jsonStartIndex) + 1
-    if (newIndex == -1) {
-      jsonStartIndex = 0
-      break
-    }
-    jsonStartIndex = newIndex
-  }
-
-  if (jsonStartIndex == 0) {
+  if (jsonStartIndex === -1) {
     // This shouldn't happen, the line is not well formatted
     // Skip this line
     return ""
