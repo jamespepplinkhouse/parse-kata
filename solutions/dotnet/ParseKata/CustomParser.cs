@@ -32,7 +32,7 @@ public class CustomParser
   private static byte QuoteByte = Encoding.ASCII.GetBytes("\"")[0];
   private static byte EscapeByte = Encoding.ASCII.GetBytes("\\")[0];
   private static byte NewLineByte = Encoding.ASCII.GetBytes("\n")[0];
-  private const int MAX_BUFFER = 1073741824; // 1GB
+  private const int MAX_BUFFER = 1024 * 1024 * 100; // 100MB
 
   public byte[] ExtractTitles(byte[] chunk)
   {
