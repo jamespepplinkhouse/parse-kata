@@ -12,6 +12,7 @@
       // If you have changed target frameworks, make sure to update the program path.
       "program": "${workspaceFolder}/ParseKata/bin/Debug/net7.0/ParseKata.dll",
       "args": [
+        "-f",
         "-i",
         "${workspaceFolder}/../../samples/1mb-input.txt",
         "-o",

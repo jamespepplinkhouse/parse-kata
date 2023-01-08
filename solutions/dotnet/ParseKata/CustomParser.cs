@@ -15,17 +15,16 @@ public class CustomParser
       throw new Exception("options are not set");
 
     using (var outputFile = new FileStream(this._options.OutputFilePath, FileMode.Create))
-    using (var fs = File.Open(this._options.InputFilePath, FileMode.Open, FileAccess.Read))
-    using (var bs = new BufferedStream(fs))
     {
-      var buffer = new byte[MAX_BUFFER];
-      var bytesRead = 0;
+      // StreamBytes blocks while enumerating, but we then get to use LINQ's nice parallel
+      // processing API with ordering! I.e. a compromise.
+      var titleBatches = this.StreamBytes()
+         .AsParallel()
+         .AsOrdered()
+         .Select((buffer) => this.ExtractTitles(buffer));
 
-      while ((bytesRead = bs.Read(buffer, 0, MAX_BUFFER)) != 0)
-      {
-        var titles = this.ExtractTitles(buffer);
+      foreach (var titles in titleBatches)
         outputFile.Write(titles);
-      }
     }
   }
 
@@ -33,9 +32,9 @@ public class CustomParser
   private static byte QuoteByte = Encoding.ASCII.GetBytes("\"")[0];
   private static byte EscapeByte = Encoding.ASCII.GetBytes("\\")[0];
   private static byte NewLineByte = Encoding.ASCII.GetBytes("\n")[0];
-  private const int MAX_BUFFER = 1048576;
+  private const int MAX_BUFFER = 1073741824; // 1GB
 
-  public Span<byte> ExtractTitles(byte[] chunk)
+  public byte[] ExtractTitles(byte[] chunk)
   {
     var chunkSpan = chunk.AsSpan();
     var chunkLength = chunkSpan.Length;
@@ -95,7 +94,6 @@ public class CustomParser
           foundTitleEndIndex = true;
       }
 
-      // TODO: Handle the case where the end if the chunk is in the middle of a title
       if (maybeTitleEndIndex == -1) break;
 
       // Create a span which has only the title in it
@@ -105,6 +103,7 @@ public class CustomParser
       // incrementing the titles cursor
       for (int i = 0; i < title.Length; i++)
       {
+        // TODO: Convert special characters here
         titles[titlesCursor] = title[i];
         titlesCursor++;
       }
@@ -121,6 +120,22 @@ public class CustomParser
     }
 
     // Return the data from the start, up to where we filled it to
-    return titles.AsSpan().Slice(0, titlesCursor);
+    return titles.AsSpan().Slice(0, titlesCursor).ToArray();
+  }
+
+  private IEnumerable<byte[]> StreamBytes()
+  {
+    using (var fs = File.Open(this._options.InputFilePath, FileMode.Open, FileAccess.Read))
+    using (var bs = new BufferedStream(fs))
+    {
+      var buffer = new byte[MAX_BUFFER];
+      var bytesRead = 0;
+
+      // TODO: Slice the buffer from the start, until the last newline byte
+      // TODO: Prepend the tail from the last stream
+
+      while ((bytesRead = bs.Read(buffer, 0, MAX_BUFFER)) != 0)
+        yield return buffer;
+    }
   }
 }
