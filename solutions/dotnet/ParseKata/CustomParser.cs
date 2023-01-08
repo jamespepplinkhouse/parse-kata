@@ -1,5 +1,6 @@
 namespace ParseKata;
 using System.Text;
+using System.Text.RegularExpressions;
 
 public class CustomParser
 {
@@ -32,6 +33,7 @@ public class CustomParser
   private static byte QuoteByte = Encoding.ASCII.GetBytes("\"")[0];
   private static byte EscapeByte = Encoding.ASCII.GetBytes("\\")[0];
   private static byte NewLineByte = Encoding.ASCII.GetBytes("\n")[0];
+  private static byte UByte = Encoding.ASCII.GetBytes("u")[0];
   private const int MAX_BUFFER = 1024 * 1024 * 100; // 100MB
 
   public byte[] ExtractTitles(byte[] chunk)
@@ -103,9 +105,27 @@ public class CustomParser
       // incrementing the titles cursor
       for (int i = 0; i < title.Length; i++)
       {
-        // TODO: Convert special characters here
-        titles[titlesCursor] = title[i];
-        titlesCursor++;
+        // Handle unicode encoded characters
+        if (title[i] == EscapeByte && title[i + 1] == UByte)
+        {
+          var encodedChar = Encoding.UTF8.GetString(title.Slice(i, 6).ToArray());
+          var decodedChar = Regex.Unescape(encodedChar);
+          var charBytes = Encoding.UTF8.GetBytes(decodedChar);
+
+          // Insert the bytes for the decoded character
+          for (int j = 0; j < charBytes.Length; j++)
+          {
+            titles[titlesCursor] = charBytes[j];
+            titlesCursor++;
+          }
+
+          i = i + 5;
+        }
+        else
+        {
+          titles[titlesCursor] = title[i];
+          titlesCursor++;
+        }
       }
 
       // Append a new line after the title we just wrote
