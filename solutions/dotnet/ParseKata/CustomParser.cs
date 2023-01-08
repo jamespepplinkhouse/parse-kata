@@ -108,18 +108,26 @@ public class CustomParser
         // Handle unicode encoded characters
         if (title[i] == EscapeByte && title[i + 1] == UByte)
         {
-          var encodedChar = Encoding.UTF8.GetString(title.Slice(i, 6).ToArray());
-          var decodedChar = Regex.Unescape(encodedChar);
-          var charBytes = Encoding.UTF8.GetBytes(decodedChar);
-
-          // Insert the bytes for the decoded character
-          for (int j = 0; j < charBytes.Length; j++)
+          try
           {
-            titles[titlesCursor] = charBytes[j];
+            var encodedChar = Encoding.UTF8.GetString(title.Slice(i, 6).ToArray());
+            var decodedChar = Regex.Unescape(encodedChar);
+            var charBytes = Encoding.UTF8.GetBytes(decodedChar);
+
+            // Insert the bytes for the decoded character
+            for (int j = 0; j < charBytes.Length; j++)
+            {
+              titles[titlesCursor] = charBytes[j];
+              titlesCursor++;
+            }
+
+            i = i + 5;
+          }
+          catch (System.Exception)
+          {
+            titles[titlesCursor] = title[i];
             titlesCursor++;
           }
-
-          i = i + 5;
         }
         else
         {
