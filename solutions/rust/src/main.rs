@@ -1,35 +1,29 @@
-use csv::ReaderBuilder;
-use futures::stream::FuturesUnordered;
-use futures::StreamExt;
-use serde_json::{self, Value};
+use async_std::fs::File;
+use async_std::io::{BufReader, BufWriter};
+use async_std::prelude::*;
+use futures::stream::{futures_unordered::FuturesUnordered, StreamExt};
+use serde_json::Value;
 use std::env;
 use std::error::Error;
-use std::fs::File;
-use std::io::{BufReader, BufWriter, Write};
 
 async fn process_input_file(input_path: &str, output_path: &str) -> Result<(), Box<dyn Error>> {
-    let input_file = File::open(input_path)?;
-    let output_file = File::create(output_path)?;
+    let input_file = File::open(input_path).await?;
+    let output_file = File::create(output_path).await?;
     let input_buffered_reader = BufReader::new(input_file);
     let mut output_buffered_writer = BufWriter::new(output_file);
 
-    let mut reader = ReaderBuilder::new()
-        .delimiter(b'\t')
-        .has_headers(false)
-        .from_reader(input_buffered_reader);
-
-    let mut records = reader.byte_records();
+    let mut line_stream = input_buffered_reader.lines();
     let mut futures = FuturesUnordered::new();
 
-    while let Some(record_result) = records.next() {
-        let record = record_result?;
+    while let Some(line_result) = line_stream.next().await {
+        let line = line_result?;
         futures.push(async_std::task::spawn_blocking(move || {
-            let fields: Vec<_> = record.iter().collect();
+            let fields: Vec<&str> = line.splitn(5, '\t').collect();
             if fields.len() == 5 {
-                let json_value: Value = serde_json::from_slice(&fields[4])
-                    .map_err(|e| format!("Error parsing JSON: {}", e))?;
-                if let Value::Object(map) = json_value {
-                    if let Some(Value::String(title_str)) = map.get("title") {
+                let json_value: Value =
+                    serde_json::from_str(fields[4]).map_err(|e| e.to_string())?;
+                if let Some(title) = json_value.get("title") {
+                    if let Some(title_str) = title.as_str() {
                         return Ok(Some(title_str.to_string()));
                     }
                 }
@@ -41,12 +35,14 @@ async fn process_input_file(input_path: &str, output_path: &str) -> Result<(), B
     while let Some(result) = futures.next().await {
         let title_opt = result.map_err(|e| format!("Error processing line: {}", e));
         if let Ok(Some(title)) = title_opt {
-            writeln!(output_buffered_writer, "{}", title)?;
+            output_buffered_writer
+                .write_all(format!("{}\n", title).as_bytes())
+                .await?;
         }
     }
 
     // Flush the writer to ensure all output is written to the file
-    output_buffered_writer.flush()?;
+    output_buffered_writer.flush().await?;
 
     Ok(())
 }
