@@ -1,6 +1,7 @@
 const std = @import("std");
 const json = std.json;
 const Allocator = std.mem.Allocator;
+const ThreadPool = std.Thread.Pool;
 
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
@@ -13,24 +14,25 @@ pub fn main() !void {
 
     const input_file_path = args[1];
     const output_file_path = args[2];
-    try processInputFile(&allocator, input_file_path, output_file_path);
+    try processInputFile(allocator, input_file_path, output_file_path);
     std.process.argsFree(allocator, args);
 }
 
-fn processInputFile(allocator: *Allocator, input_file_path: []const u8, output_file_path: []const u8) !void {
+fn processInputFile(allocator: Allocator, input_file_path: []const u8, output_file_path: []const u8) !void {
     const in_file = try std.fs.cwd().openFile(input_file_path, .{});
     defer in_file.close();
 
     const out_file = try std.fs.cwd().createFile(output_file_path, .{});
     defer out_file.close();
 
-    const thread_pool = try std.Thread.Pool.init(allocator, std.math.maxInt(usize));
+    const options = ThreadPool.Options{ .n_jobs = 8, .allocator = allocator };
+    const thread_pool = try ThreadPool.init(options);
     defer thread_pool.deinit();
 
     var buf: [4096]u8 = undefined;
     while (try in_file.reader().readUntilDelimiterOrEof(&buf, '\n')) |line| {
         const result = try thread_pool.spawn(allocator, processLine, .{line});
-        try out_file.writer().print("{s}\n", .{result});
+        try out_file.writer().print("{}\n", .{result});
     }
 }
 
