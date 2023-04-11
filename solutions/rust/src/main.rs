@@ -8,16 +8,16 @@ use std::error::Error;
 async fn process_input_file(input_path: &str, output_path: &str) -> Result<(), Box<dyn Error>> {
     let input_file = File::open(input_path).await?;
     let output_file = File::create(output_path).await?;
-    let input_buffered_reader = BufReader::new(input_file);
+    let buffer_size = 100 * 1024 * 1024; // 100MB
+    let input_buffered_reader = BufReader::with_capacity(buffer_size, input_file);
     let mut output_buffered_writer = BufWriter::new(output_file);
 
     let mut line_stream = input_buffered_reader.lines();
 
     while let Some(line_result) = line_stream.next().await {
         let line = line_result?;
-        let fields: Vec<&str> = line.splitn(5, '\t').collect();
-        if fields.len() == 5 {
-            let json_value: Value = serde_json::from_str(fields[4]).map_err(|e| e.to_string())?;
+        if let Some(json_string) = line.find('{').map(|start_index| &line[start_index..]) {
+            let json_value: Value = serde_json::from_str(json_string).map_err(|e| e.to_string())?;
             if let Some(title) = json_value.get("title") {
                 if let Some(title_str) = title.as_str() {
                     output_buffered_writer
