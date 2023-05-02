@@ -1,6 +1,7 @@
 use async_std::fs::File;
 use async_std::io::{BufReader, BufWriter};
 use async_std::prelude::*;
+use memchr::memmem;
 use serde_json::Value;
 use std::env;
 use std::error::Error;
@@ -45,81 +46,34 @@ async fn process_input_file_bytes(
     let output_file = File::create(output_path).await?;
     let buffer_size = 100 * 1024 * 1024; // 100MB
 
+    let title_marker_bytes = b"\"title\": \"";
+    let quote_bytes = b"\"";
+    let newline_bytes = b"\n";
+
     let mut reader = BufReader::new(input_file);
     let mut writer = BufWriter::new(output_file);
     let mut buffer = vec![0; buffer_size];
-
-    // Thread 1: Read the file in chunks
-    // Thread 1: Find title marker bytes
-    // Thread 1: Write title to output file
 
     while let Ok(bytes_read) = reader.read(&mut buffer).await {
         if bytes_read == 0 {
             break; // End of file reached
         }
 
-        // Loop over the buffer, looking for JSON objects
-        let mut start_indices = Vec::new();
-        let mut end_indices = Vec::new();
-        let mut stack = Vec::new();
+        let mut title_iterator = memmem::find_iter(&buffer, title_marker_bytes);
 
-        let len = buffer.len();
-        for i in 0..len {
-            // Check for start condition: tab character followed by '{'
-            if i < len - 1 && buffer[i] == b'\t' && buffer[i + 1] == b'{' {
-                stack.push(i + 1);
-            }
-            // Check for end condition: '}' followed by newline character
-            else if i < len - 1 && buffer[i] == b'}' && buffer[i + 1] == b'\n' {
-                if let Some(start_index) = stack.pop() {
-                    start_indices.push(start_index);
-                    end_indices.push(i);
-                }
-            }
+        while let Some(title_index) = title_iterator.next() {
+            let title_start_index = title_index + title_marker_bytes.len();
+            let title_end_index = buffer[title_start_index..]
+                .iter()
+                .position(|&b| b == quote_bytes[0])
+                .map(|end_index| title_start_index + end_index)
+                .unwrap_or(buffer.len());
+
+            let title_bytes = &buffer[title_start_index..title_end_index];
+            writer.write_all(title_bytes).await?;
+            writer.write_all(newline_bytes).await?;
         }
-
-        // for i in 0..start_indices.len() {
-        //     let start_index = start_indices[i];
-        //     let end_index = end_indices[i];
-        //     let json_string = &buffer[start_index..=end_index];
-        //     let json_value: Value =
-        //         serde_json::from_slice(json_string).map_err(|e| e.to_string())?;
-        //     if let Some(title) = json_value.get("title") {
-        //         if let Some(title_str) = title.as_str() {
-        //             writer
-        //                 .write_all(format!("{}\n", title_str).as_bytes())
-        //                 .await?;
-        //         }
-        //     }
-        // }
-
-        // println!("Start indices: {:?}", start_indices);
-        // println!("End indices: {:?}", end_indices);
-
-        // let _chunk = &buffer[..bytes_read].find('{');
-        // buffer.as_slice().find('{');
-        // println!("Read {} bytes", bytes_read);
-        // chunk.find
     }
-
-    // let input_buffered_reader = BufReader::with_capacity(buffer_size, input_file);
-    // let mut output_buffered_writer = BufWriter::new(output_file);
-
-    // let mut stream = input_buffered_reader.chunks(buffer_size);
-
-    // while let Some(chunk_result) = stream.next().await {
-    //     let chunk = chunk_result?.slice();
-    //     if let Some(json_string) = chunk.find('{').map(|start_index| &chunk[start_index..]) {
-    //         let json_value: Value = serde_json::from_str(json_string).map_err(|e| e.to_string())?;
-    //         if let Some(title) = json_value.get("title") {
-    //             if let Some(title_str) = title.as_str() {
-    //                 output_buffered_writer
-    //                     .write_all(format!("{}\n", title_str).as_bytes())
-    //                     .await?;
-    //             }
-    //         }
-    //     }
-    // }
 
     // Flush the writer to ensure all output is written to the file
     writer.flush().await?;
