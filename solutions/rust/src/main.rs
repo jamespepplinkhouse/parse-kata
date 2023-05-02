@@ -5,7 +5,10 @@ use serde_json::Value;
 use std::env;
 use std::error::Error;
 
-async fn process_input_file(input_path: &str, output_path: &str) -> Result<(), Box<dyn Error>> {
+async fn _process_input_file_json(
+    input_path: &str,
+    output_path: &str,
+) -> Result<(), Box<dyn Error>> {
     let input_file = File::open(input_path).await?;
     let output_file = File::create(output_path).await?;
     let buffer_size = 100 * 1024 * 1024; // 100MB
@@ -34,6 +37,59 @@ async fn process_input_file(input_path: &str, output_path: &str) -> Result<(), B
     Ok(())
 }
 
+async fn process_input_file_bytes(
+    input_path: &str,
+    output_path: &str,
+) -> Result<(), Box<dyn Error>> {
+    let input_file = File::open(input_path).await?;
+    let output_file = File::create(output_path).await?;
+    let buffer_size = 100 * 1024 * 1024; // 100MB
+
+    let mut reader = BufReader::new(input_file);
+    let mut writer = BufWriter::new(output_file);
+
+    let mut count = 0;
+
+    let mut buffer = vec![0; buffer_size];
+    while let Ok(bytes_read) = reader.read(&mut buffer).await {
+        if bytes_read == 0 {
+            break; // End of file reached
+        }
+
+        // Process the chunk here
+        let _chunk = &buffer[..bytes_read];
+        count += 1;
+        // println!("Read {} bytes", bytes_read);
+        // chunk.find
+    }
+
+    println!("Read {} chunks", count);
+
+    // let input_buffered_reader = BufReader::with_capacity(buffer_size, input_file);
+    // let mut output_buffered_writer = BufWriter::new(output_file);
+
+    // let mut stream = input_buffered_reader.chunks(buffer_size);
+
+    // while let Some(chunk_result) = stream.next().await {
+    //     let chunk = chunk_result?.slice();
+    //     if let Some(json_string) = chunk.find('{').map(|start_index| &chunk[start_index..]) {
+    //         let json_value: Value = serde_json::from_str(json_string).map_err(|e| e.to_string())?;
+    //         if let Some(title) = json_value.get("title") {
+    //             if let Some(title_str) = title.as_str() {
+    //                 output_buffered_writer
+    //                     .write_all(format!("{}\n", title_str).as_bytes())
+    //                     .await?;
+    //             }
+    //         }
+    //     }
+    // }
+
+    // Flush the writer to ensure all output is written to the file
+    writer.flush().await?;
+
+    Ok(())
+}
+
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
@@ -45,7 +101,12 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let input_path = &args[1];
     let output_path = &args[2];
 
-    process_input_file(input_path, output_path)
+    // process_input_file_json(input_path, output_path)
+    //     .await
+    //     .map_err(|err| println!("Error processing file: {}", err))
+    //     .ok();
+
+    process_input_file_bytes(input_path, output_path)
         .await
         .map_err(|err| println!("Error processing file: {}", err))
         .ok();
