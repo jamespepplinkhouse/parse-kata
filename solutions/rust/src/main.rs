@@ -47,23 +47,60 @@ async fn process_input_file_bytes(
 
     let mut reader = BufReader::new(input_file);
     let mut writer = BufWriter::new(output_file);
-
-    let mut count = 0;
-
     let mut buffer = vec![0; buffer_size];
+
+    // Thread 1: Read the file in chunks
+    // Thread 1: Find title marker bytes
+    // Thread 1: Write title to output file
+
     while let Ok(bytes_read) = reader.read(&mut buffer).await {
         if bytes_read == 0 {
             break; // End of file reached
         }
 
-        // Process the chunk here
-        let _chunk = &buffer[..bytes_read];
-        count += 1;
+        // Loop over the buffer, looking for JSON objects
+        let mut start_indices = Vec::new();
+        let mut end_indices = Vec::new();
+        let mut stack = Vec::new();
+
+        let len = buffer.len();
+        for i in 0..len {
+            // Check for start condition: tab character followed by '{'
+            if i < len - 1 && buffer[i] == b'\t' && buffer[i + 1] == b'{' {
+                stack.push(i + 1);
+            }
+            // Check for end condition: '}' followed by newline character
+            else if i < len - 1 && buffer[i] == b'}' && buffer[i + 1] == b'\n' {
+                if let Some(start_index) = stack.pop() {
+                    start_indices.push(start_index);
+                    end_indices.push(i);
+                }
+            }
+        }
+
+        // for i in 0..start_indices.len() {
+        //     let start_index = start_indices[i];
+        //     let end_index = end_indices[i];
+        //     let json_string = &buffer[start_index..=end_index];
+        //     let json_value: Value =
+        //         serde_json::from_slice(json_string).map_err(|e| e.to_string())?;
+        //     if let Some(title) = json_value.get("title") {
+        //         if let Some(title_str) = title.as_str() {
+        //             writer
+        //                 .write_all(format!("{}\n", title_str).as_bytes())
+        //                 .await?;
+        //         }
+        //     }
+        // }
+
+        // println!("Start indices: {:?}", start_indices);
+        // println!("End indices: {:?}", end_indices);
+
+        // let _chunk = &buffer[..bytes_read].find('{');
+        // buffer.as_slice().find('{');
         // println!("Read {} bytes", bytes_read);
         // chunk.find
     }
-
-    println!("Read {} chunks", count);
 
     // let input_buffered_reader = BufReader::with_capacity(buffer_size, input_file);
     // let mut output_buffered_writer = BufWriter::new(output_file);
