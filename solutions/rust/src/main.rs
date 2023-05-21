@@ -70,8 +70,8 @@ async fn process_input_file_bytes(
                 .unwrap_or(buffer.len());
 
             let title_bytes = &buffer[title_start_index..title_end_index];
-            writer.write_all(title_bytes).await?;
-            writer.write_all(newline_bytes).await?;
+            writer.write(title_bytes).await?;
+            writer.write(newline_bytes).await?;
         }
     }
 
