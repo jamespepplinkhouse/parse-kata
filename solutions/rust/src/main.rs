@@ -1,49 +1,44 @@
-use async_std::fs::File;
-use async_std::io::{BufReader, BufWriter};
-use async_std::prelude::*;
 use boyer_moore_magiclen::BMByte;
 use serde_json::Value;
 use std::env;
 use std::error::Error;
+use std::fs::File;
+use std::io::BufRead;
+use std::io::BufReader;
+use std::io::BufWriter;
+use std::io::Read;
+use std::io::Write;
 
-async fn process_input_file_json(
-    input_path: &str,
-    output_path: &str,
-) -> Result<(), Box<dyn Error>> {
-    let input_file = File::open(input_path).await?;
-    let output_file = File::create(output_path).await?;
+fn process_input_file_json(input_path: &str, output_path: &str) -> Result<(), Box<dyn Error>> {
+    let input_file = File::open(input_path)?;
+    let output_file = File::create(output_path)?;
     let buffer_size = 100 * 1024 * 1024; // 100MB
     let input_buffered_reader = BufReader::with_capacity(buffer_size, input_file);
     let mut output_buffered_writer = BufWriter::new(output_file);
 
     let mut line_stream = input_buffered_reader.lines();
 
-    while let Some(line_result) = line_stream.next().await {
+    while let Some(line_result) = line_stream.next() {
         let line = line_result?;
         if let Some(json_string) = line.find('{').map(|start_index| &line[start_index..]) {
             let json_value: Value = serde_json::from_str(json_string).map_err(|e| e.to_string())?;
             if let Some(title) = json_value.get("title") {
                 if let Some(title_str) = title.as_str() {
-                    output_buffered_writer
-                        .write_all(format!("{}\n", title_str).as_bytes())
-                        .await?;
+                    output_buffered_writer.write_all(format!("{}\n", title_str).as_bytes())?;
                 }
             }
         }
     }
 
     // Flush the writer to ensure all output is written to the file
-    output_buffered_writer.flush().await?;
+    output_buffered_writer.flush()?;
 
     Ok(())
 }
 
-async fn process_input_file_bytes(
-    input_path: &str,
-    output_path: &str,
-) -> Result<(), Box<dyn Error>> {
-    let input_file = File::open(input_path).await?;
-    let output_file = File::create(output_path).await?;
+fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(), Box<dyn Error>> {
+    let input_file = File::open(input_path)?;
+    let output_file = File::create(output_path)?;
     let buffer_size = 100 * 1024 * 1024; // 100MB
 
     let title_len = b"\"title\": \"".len();
@@ -55,7 +50,7 @@ async fn process_input_file_bytes(
     let mut writer = BufWriter::new(output_file);
     let mut buffer = vec![0; buffer_size];
 
-    while let Ok(bytes_read) = reader.read(&mut buffer).await {
+    while let Ok(bytes_read) = reader.read(&mut buffer) {
         if bytes_read == 0 {
             break; // End of file reached
         }
@@ -72,19 +67,18 @@ async fn process_input_file_bytes(
                 .unwrap_or(buffer.len());
 
             let title_bytes = &buffer[title_start_index..title_end_index];
-            writer.write(title_bytes).await?;
-            writer.write(newline_bytes.as_slice()).await?;
+            writer.write(title_bytes)?;
+            writer.write(newline_bytes.as_slice())?;
         }
     }
 
     // Flush the writer to ensure all output is written to the file
-    writer.flush().await?;
+    writer.flush()?;
 
     Ok(())
 }
 
-#[async_std::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
     if args.len() != 4 {
         println!(
@@ -100,12 +94,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     if fast_mode == "true" {
         process_input_file_bytes(input_path, output_path)
-            .await
             .map_err(|err| println!("Error processing file: {}", err))
             .ok();
     } else {
         process_input_file_json(input_path, output_path)
-            .await
             .map_err(|err| println!("Error processing file: {}", err))
             .ok();
     }
