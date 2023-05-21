@@ -1,12 +1,12 @@
 use async_std::fs::File;
 use async_std::io::{BufReader, BufWriter};
 use async_std::prelude::*;
-use memchr::memmem;
+use boyer_moore_magiclen::BMByte;
 use serde_json::Value;
 use std::env;
 use std::error::Error;
 
-async fn _process_input_file_json(
+async fn process_input_file_json(
     input_path: &str,
     output_path: &str,
 ) -> Result<(), Box<dyn Error>> {
@@ -46,7 +46,8 @@ async fn process_input_file_bytes(
     let output_file = File::create(output_path).await?;
     let buffer_size = 100 * 1024 * 1024; // 100MB
 
-    let title_marker_bytes = b"\"title\": \"";
+    let title_len = b"\"title\": \"".len();
+    let bmb_title = BMByte::from("\"title\": \"").unwrap();
     let quote_bytes = b"\"";
     let newline_bytes = b"\n";
 
@@ -59,10 +60,11 @@ async fn process_input_file_bytes(
             break; // End of file reached
         }
 
-        let mut title_iterator = memmem::find_iter(&buffer, title_marker_bytes);
+        // Boyer-Moore-MagicLen, a fast string search algorithm
+        let title_indexes = bmb_title.find_in(&buffer, 0);
 
-        while let Some(title_index) = title_iterator.next() {
-            let title_start_index = title_index + title_marker_bytes.len();
+        for title_index in title_indexes {
+            let title_start_index = title_index + title_len;
             let title_end_index = buffer[title_start_index..]
                 .iter()
                 .position(|&b| b == quote_bytes[0])
@@ -71,7 +73,7 @@ async fn process_input_file_bytes(
 
             let title_bytes = &buffer[title_start_index..title_end_index];
             writer.write(title_bytes).await?;
-            writer.write(newline_bytes).await?;
+            writer.write(newline_bytes.as_slice()).await?;
         }
     }
 
@@ -84,23 +86,29 @@ async fn process_input_file_bytes(
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
-    if args.len() != 3 {
-        println!("Usage: {} <input_file> <output_file>", args[0]);
+    if args.len() != 4 {
+        println!(
+            "Usage: {} <input_file> <output_file> <fast_mode_boolean>",
+            args[0]
+        );
         return Ok(());
     }
 
     let input_path = &args[1];
     let output_path = &args[2];
+    let fast_mode = &args[3];
 
-    // process_input_file_json(input_path, output_path)
-    //     .await
-    //     .map_err(|err| println!("Error processing file: {}", err))
-    //     .ok();
-
-    process_input_file_bytes(input_path, output_path)
-        .await
-        .map_err(|err| println!("Error processing file: {}", err))
-        .ok();
+    if fast_mode == "true" {
+        process_input_file_bytes(input_path, output_path)
+            .await
+            .map_err(|err| println!("Error processing file: {}", err))
+            .ok();
+    } else {
+        process_input_file_json(input_path, output_path)
+            .await
+            .map_err(|err| println!("Error processing file: {}", err))
+            .ok();
+    }
 
     println!("Processing complete.");
 

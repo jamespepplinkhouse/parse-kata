@@ -147,6 +147,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "boyer-moore-magiclen"
+version = "0.2.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c77eb6b3a37f71fcd40e49b56c028ea8795c0e550afd8021e3e6a2369653035"
+dependencies = [
+ "debug-helper",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -225,6 +234,12 @@ dependencies = [
  "quote",
  "syn",
 ]
+
+[[package]]
+name = "debug-helper"
+version = "0.3.13"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f578e8e2c440e7297e008bb5486a3a8a194775224bbc23729b0dbdfaeebf162e"
 
 [[package]]
 name = "either"
@@ -575,8 +590,8 @@ name = "rust"
 version = "0.1.0"
 dependencies = [
  "async-std",
+ "boyer-moore-magiclen",
  "futures",
- "memchr",
  "rayon",
  "serde_json",
 ]
