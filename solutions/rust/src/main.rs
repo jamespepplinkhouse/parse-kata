@@ -45,19 +45,40 @@ fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(), B
     let bmb_title = BMByte::from("\"title\": \"").unwrap();
     let quote_bytes = b"\"";
     let newline_bytes = b"\n";
+    let bmb_newline = BMByte::from("\n").unwrap();
 
     let mut reader = BufReader::new(input_file);
     let mut writer = BufWriter::new(output_file);
     let mut buffer = vec![0; buffer_size];
 
+    // Read the file in chunks of buffer_size
+    let mut last_tail: Option<Vec<u8>> = None;
     while let Ok(bytes_read) = reader.read(&mut buffer) {
         if bytes_read == 0 {
             break; // End of file reached
         }
 
-        // Boyer-Moore-MagicLen, a fast string search algorithm
-        let title_indexes = bmb_title.find_in(&buffer, 0);
+        if last_tail.is_some() {
+            // If there is a tail from the last chunk, prepend it to the buffer
+            buffer.splice(..0, last_tail.take().unwrap());
+        }
 
+        // Find the tail, which is any bytes after the last newline character
+        let last_newline_index = match bmb_newline.rfind_first_in(&buffer) {
+            Some(index) => Some(index + 1),
+            None => None,
+        };
+
+        last_tail = match last_newline_index {
+            Some(last_newline_index) => Some(buffer[last_newline_index..].to_vec()),
+            None => None,
+        };
+
+        // Boyer-Moore-MagicLen, a fast string search algorithm
+        let title_indexes: Vec<usize> = bmb_title.find_in(&buffer, 0);
+
+        // Do this part in parallel?
+        // Or move this to another thread and move on
         for title_index in title_indexes {
             let title_start_index = title_index + title_len;
             let title_end_index = buffer[title_start_index..]
