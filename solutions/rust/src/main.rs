@@ -1,4 +1,5 @@
 use boyer_moore_magiclen::BMByte;
+use parse_kata::find_index_of_last_incomplete_line;
 use serde_json::Value;
 use std::env;
 use std::error::Error;
@@ -74,7 +75,6 @@ fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(), B
     let bmb_title = BMByte::from("\"title\": \"").unwrap();
     let quote_bytes = b"\"";
     let newline_bytes = b"\n";
-    let bmb_newline = BMByte::from("\n").unwrap();
 
     let mut reader = BufReader::new(input_file);
     let mut writer = BufWriter::new(output_file);
@@ -93,10 +93,7 @@ fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(), B
         }
 
         // Find the tail, which is any bytes after the last newline character
-        let last_newline_index = match bmb_newline.rfind_first_in(&buffer) {
-            Some(index) => Some(index + 1),
-            None => None,
-        };
+        let last_newline_index = find_index_of_last_incomplete_line(&buffer);
 
         last_tail = match last_newline_index {
             Some(last_newline_index) => Some(buffer[last_newline_index..].to_vec()),
@@ -126,8 +123,4 @@ fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(), B
     writer.flush()?;
 
     Ok(())
-}
-
-pub fn minus_one(number: i32) -> i32 {
-    number - 1
 }
