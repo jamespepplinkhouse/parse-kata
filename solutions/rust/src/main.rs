@@ -24,7 +24,6 @@ struct Opt {
 
 fn main() -> Result<(), Box<dyn Error>> {
     let opt = Opt::from_args();
-    println!("{:?}", opt);
 
     let process = match opt.fast_mode {
         true => {
