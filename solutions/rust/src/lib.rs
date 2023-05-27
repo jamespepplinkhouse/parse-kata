@@ -82,8 +82,19 @@ pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(
                 .map(|end_index| title_start_index + end_index)
                 .unwrap_or(buffer.len());
 
-            let title_bytes = &buffer[title_start_index..title_end_index];
-            writer.write(title_bytes)?;
+            // Title bytes with JSON unicode escape sequences
+            let title_encoded_bytes = &buffer[title_start_index..title_end_index];
+
+            // JSON string must be quoted for serde to parse it
+            let valid_json_string = &format!("\"{}\"", std::str::from_utf8(title_encoded_bytes)?);
+
+            // Serde value, not a string, but the unicode escape sequences are decoded
+            let title: serde_json::Value = serde_json::from_str(valid_json_string)?;
+
+            // Get the string from the serde value, correctly decoded
+            let title_str = title.as_str().unwrap();
+
+            writer.write(&title_str.as_bytes())?;
             writer.write(newline_bytes.as_slice())?;
         }
     }
