@@ -20,9 +20,11 @@
         }
       },
       "args": [
+        "-i",
         "../../samples/10mb-input.txt",
+        "-o",
         "../../data/rust-10mb-ouput.txt",
-        "true"
+        "-f"
       ],
       "cwd": "${workspaceFolder}"
     },
