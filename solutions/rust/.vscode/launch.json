@@ -7,15 +7,15 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug executable 'rust'",
+      "name": "Debug executable 'parse-kata'",
       "cargo": {
         "args": [
           "build",
-          "--bin=rust",
-          "--package=rust"
+          "--bin=parse-kata",
+          "--package=parse-kata"
         ],
         "filter": {
-          "name": "rust",
+          "name": "parse-kata",
           "kind": "bin"
         }
       },

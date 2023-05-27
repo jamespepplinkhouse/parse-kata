@@ -9,6 +9,35 @@ use std::io::BufWriter;
 use std::io::Read;
 use std::io::Write;
 
+fn main() -> Result<(), Box<dyn Error>> {
+    let args: Vec<String> = env::args().collect();
+    if args.len() != 4 {
+        println!(
+            "Usage: {} <input_file> <output_file> <fast_mode_boolean>",
+            args[0]
+        );
+        return Ok(());
+    }
+
+    let input_path = &args[1];
+    let output_path = &args[2];
+    let fast_mode = &args[3];
+
+    if fast_mode == "true" {
+        process_input_file_bytes(input_path, output_path)
+            .map_err(|err| println!("Error processing file: {}", err))
+            .ok();
+    } else {
+        process_input_file_json(input_path, output_path)
+            .map_err(|err| println!("Error processing file: {}", err))
+            .ok();
+    }
+
+    println!("Processing complete.");
+
+    Ok(())
+}
+
 fn process_input_file_json(input_path: &str, output_path: &str) -> Result<(), Box<dyn Error>> {
     let input_file = File::open(input_path)?;
     let output_file = File::create(output_path)?;
@@ -99,31 +128,6 @@ fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(), B
     Ok(())
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
-    let args: Vec<String> = env::args().collect();
-    if args.len() != 4 {
-        println!(
-            "Usage: {} <input_file> <output_file> <fast_mode_boolean>",
-            args[0]
-        );
-        return Ok(());
-    }
-
-    let input_path = &args[1];
-    let output_path = &args[2];
-    let fast_mode = &args[3];
-
-    if fast_mode == "true" {
-        process_input_file_bytes(input_path, output_path)
-            .map_err(|err| println!("Error processing file: {}", err))
-            .ok();
-    } else {
-        process_input_file_json(input_path, output_path)
-            .map_err(|err| println!("Error processing file: {}", err))
-            .ok();
-    }
-
-    println!("Processing complete.");
-
-    Ok(())
+pub fn minus_one(number: i32) -> i32 {
+    number - 1
 }
