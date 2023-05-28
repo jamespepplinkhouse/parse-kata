@@ -40,8 +40,9 @@ pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(
     let output_file = File::create(output_path)?;
     let buffer_size = 100 * 1024 * 1024; // 100MB
 
-    let title_len = b"\"title\": \"".len();
-    let bmb_title = BMByte::from("\"title\": \"").unwrap();
+    let title_marker = "\"title\": \"";
+    let title_len = title_marker.as_bytes().len();
+    let bmb_title = BMByte::from(title_marker).unwrap();
     let quote_bytes = b"\"";
     let newline_bytes = b"\n";
 
