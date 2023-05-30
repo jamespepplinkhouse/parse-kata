@@ -11,7 +11,7 @@ use std::io::Write;
 pub fn process_input_file_json(input_path: &str, output_path: &str) -> Result<(), Box<dyn Error>> {
     let input_file = File::open(input_path)?;
     let output_file = File::create(output_path)?;
-    let buffer_size = 10 * 1024 * 1024; // 100MB
+    let buffer_size = 1 * 1024 * 1024; // 1MB
     let input_buffered_reader = BufReader::with_capacity(buffer_size, input_file);
     let mut output_buffered_writer = BufWriter::new(output_file);
 
@@ -38,7 +38,7 @@ pub fn process_input_file_json(input_path: &str, output_path: &str) -> Result<()
 pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(), Box<dyn Error>> {
     let input_file = File::open(input_path)?;
     let output_file = File::create(output_path)?;
-    let buffer_size = 100 * 1024 * 1024; // 100MB
+    let buffer_size = 1 * 1024 * 1024; // 1MB
 
     let title_marker = "\"title\": \"";
     let title_len = title_marker.as_bytes().len();
@@ -57,14 +57,13 @@ pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(
             break; // End of file reached
         }
 
-        if last_tail.is_some() {
+        if last_tail.is_some() == true {
             // If there is a tail from the last chunk, prepend it to the buffer
             buffer.splice(..0, last_tail.take().unwrap());
         }
 
         // Find the tail, which is any bytes after the last newline character
         let last_newline_index = find_index_of_last_incomplete_line(&buffer);
-
         last_tail = match last_newline_index {
             Some(last_newline_index) => Some(buffer[last_newline_index..].to_vec()),
             None => None,
@@ -86,16 +85,18 @@ pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(
             // Title bytes with JSON unicode escape sequences
             let title_encoded_bytes = &buffer[title_start_index..title_end_index];
 
-            // JSON string must be quoted for serde to parse it
-            let valid_json_string = &format!("\"{}\"", std::str::from_utf8(title_encoded_bytes)?);
+            // // JSON string must be quoted for serde to parse it
+            // let valid_json_string = &format!("\"{}\"", std::str::from_utf8(title_encoded_bytes)?);
 
-            // Serde value, not a string, but the unicode escape sequences are decoded
-            let title: serde_json::Value = serde_json::from_str(valid_json_string)?;
+            // // Serde value, not a string, but the unicode escape sequences are decoded
+            // let title: serde_json::Value = serde_json::from_str(valid_json_string)?;
 
-            // Get the string from the serde value, correctly decoded
-            let title_str = title.as_str().unwrap();
+            // // Get the string from the serde value, correctly decoded
+            // let title_str = title.as_str().unwrap();
 
-            writer.write(&title_str.as_bytes())?;
+            // writer.write(&title_str.as_bytes())?;
+
+            writer.write(&title_encoded_bytes)?;
             writer.write(newline_bytes.as_slice())?;
         }
     }
