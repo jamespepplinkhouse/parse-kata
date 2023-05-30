@@ -41,9 +41,8 @@ pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(
     let buffer_size = 1 * 1024 * 1024; // 1MB
 
     let title_marker = "\"title\": \"";
-    let title_len = title_marker.as_bytes().len();
+    let title_marker_len = title_marker.as_bytes().len();
     let bmb_title = BMByte::from(title_marker).unwrap();
-    let quote_bytes = b"\"";
     let newline_bytes = b"\n";
 
     let mut reader = BufReader::new(input_file);
@@ -75,28 +74,22 @@ pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(
         // Do this part in parallel?
         // Or move this to another thread and move on
         for title_index in title_indexes {
-            let title_start_index = title_index + title_len;
-            let title_end_index = buffer[title_start_index..]
-                .iter()
-                .position(|&b| b == quote_bytes[0])
-                .map(|end_index| title_start_index + end_index)
-                .unwrap_or(buffer.len());
+            let title_start_index = title_index + title_marker_len;
+            let title_length = find_unescaped_double_quote(&buffer[title_start_index..])
+                .unwrap_or(buffer[title_start_index..].len());
+            let title_end_index = if buffer.len() >= title_start_index + title_length + 1 {
+                title_start_index + title_length + 1
+            } else {
+                title_start_index + title_length
+            };
 
-            // Title bytes with JSON unicode escape sequences
-            let title_encoded_bytes = &buffer[title_start_index..title_end_index];
+            // Title bytes including quotes (JSON value)
+            let json_title_bytes = &buffer[title_start_index - 1..title_end_index];
 
-            // // JSON string must be quoted for serde to parse it
-            // let valid_json_string = &format!("\"{}\"", std::str::from_utf8(title_encoded_bytes)?);
+            // Serde - JSON unicode escape sequences are decoded
+            let title: String = serde_json::from_slice(json_title_bytes).unwrap_or(String::new());
 
-            // // Serde value, not a string, but the unicode escape sequences are decoded
-            // let title: serde_json::Value = serde_json::from_str(valid_json_string)?;
-
-            // // Get the string from the serde value, correctly decoded
-            // let title_str = title.as_str().unwrap();
-
-            // writer.write(&title_str.as_bytes())?;
-
-            writer.write(&title_encoded_bytes)?;
+            writer.write(&title.as_bytes())?;
             writer.write(newline_bytes.as_slice())?;
         }
     }
@@ -112,6 +105,20 @@ pub fn find_index_of_last_incomplete_line(buffer: &Vec<u8>) -> Option<usize> {
         Some(index) => Some(index + 1),
         None => None,
     }
+}
+
+pub fn find_unescaped_double_quote(buffer: &[u8]) -> Option<usize> {
+    let mut previous_was_backslash = false;
+
+    for (i, &byte) in buffer.iter().enumerate() {
+        match byte {
+            b'\\' => previous_was_backslash = true,
+            b'"' if !previous_was_backslash => return Some(i),
+            _ => previous_was_backslash = false,
+        }
+    }
+
+    None
 }
 
 #[cfg(test)]
@@ -137,5 +144,32 @@ mod tests {
         let buffer: Vec<u8> = b"No newline here".to_vec();
         let index = find_index_of_last_incomplete_line(&buffer);
         assert_eq!(index, None);
+    }
+
+    #[test]
+    fn find_unescaped_double_quote_finds_unescaped_double_quote() {
+        let text = r#"Hello \"World\""!"#;
+        let buffer = text.as_bytes();
+        assert_eq!(find_unescaped_double_quote(buffer), Some(15));
+    }
+
+    #[test]
+    fn find_unescaped_double_quote_returns_none_when_no_unescaped_double_quote() {
+        let text = r#"Hello \\\"World\\\"!"#;
+        let buffer = text.as_bytes();
+        assert_eq!(find_unescaped_double_quote(buffer), None);
+    }
+
+    #[test]
+    fn find_unescaped_double_quote_returns_none_when_no_double_quote_at_all() {
+        let text = r#"Hello World!"#;
+        let buffer = text.as_bytes();
+        assert_eq!(find_unescaped_double_quote(buffer), None);
+    }
+
+    #[test]
+    fn find_unescaped_double_quote_handles_empty_buffer() {
+        let buffer: [u8; 0] = [];
+        assert_eq!(find_unescaped_double_quote(&buffer), None);
     }
 }
