@@ -44,6 +44,7 @@ pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(
     let title_marker_len = title_marker.as_bytes().len();
     let bmb_title = BMByte::from(title_marker).unwrap();
     let newline_bytes = b"\n";
+    let unicode_escape_bytes = b"\\u";
 
     let mut reader = BufReader::new(input_file);
     let mut writer = BufWriter::new(output_file);
@@ -86,10 +87,18 @@ pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(
             // Title bytes including quotes (JSON value)
             let json_title_bytes = &buffer[title_start_index - 1..title_end_index];
 
-            // Serde - JSON unicode escape sequences are decoded
-            let title: String = serde_json::from_slice(json_title_bytes).unwrap_or(String::new());
+            if json_title_bytes
+                .windows(unicode_escape_bytes.len())
+                .any(|window| window == unicode_escape_bytes)
+            {
+                // Serde - JSON unicode escape sequences are decoded
+                let title: String =
+                    serde_json::from_slice(json_title_bytes).unwrap_or(String::new());
+                writer.write(&title.as_bytes())?;
+            } else {
+                writer.write(json_title_bytes)?;
+            }
 
-            writer.write(&title.as_bytes())?;
             writer.write(newline_bytes.as_slice())?;
         }
     }
