@@ -56,12 +56,13 @@ pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(
     Ok(())
 }
 
-pub fn extract_titles_from_buffer(buffer: &[u8]) -> Vec<&[u8]> {
+pub fn extract_titles_from_buffer(buffer: &[u8]) -> Vec<Vec<u8>> {
     let mut titles = Vec::new();
 
     let minimum_json_start = 50;
     let minimum_json_size = 259;
     let title_marker = b"\"title\": \"";
+    let unicode_escape_bytes = b"\\u";
 
     let mut index = 0;
 
@@ -106,9 +107,20 @@ pub fn extract_titles_from_buffer(buffer: &[u8]) -> Vec<&[u8]> {
         //     std::str::from_utf8(&buffer[title_start..title_end])
         // );
 
-        // Extract, decode, and store/output the title value
-        // TODO: JSON decoding
-        titles.push(&buffer[title_start..title_end]);
+        // Extract, decode, and store the title value
+        let json_title_bytes = &buffer[title_start..title_end];
+        if json_title_bytes
+            .windows(unicode_escape_bytes.len())
+            .any(|window| window == unicode_escape_bytes)
+        {
+            // Serde - JSON unicode escape sequences are decoded
+            let json_title_including_double_quotes = &buffer[title_start - 1..title_end + 1];
+            let title: String =
+                serde_json::from_slice(json_title_including_double_quotes).unwrap_or(String::new());
+            titles.push(title.into_bytes());
+        } else {
+            titles.push(json_title_bytes.to_vec());
+        }
 
         // Skip to the minimum possible end of the JSON
         index = index + minimum_json_size;
