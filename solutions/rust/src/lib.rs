@@ -109,9 +109,10 @@ pub fn extract_titles_from_buffer(buffer: &[u8]) -> Vec<Vec<u8>> {
 
         // Extract, decode, and store the title value
         let json_title_bytes = &buffer[title_start..title_end];
-        if json_title_bytes
-            .windows(unicode_escape_bytes.len())
-            .any(|window| window == unicode_escape_bytes)
+        if json_title_bytes.iter().position(|&b| b == b'\"').is_some()
+            || json_title_bytes
+                .windows(unicode_escape_bytes.len())
+                .any(|window| window == unicode_escape_bytes)
         {
             // Serde - JSON unicode escape sequences are decoded
             let json_title_including_double_quotes = &buffer[title_start - 1..title_end + 1];
