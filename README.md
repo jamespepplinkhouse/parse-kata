@@ -85,3 +85,87 @@ REF: https://openlibrary.org/type/work
 /type/work	/works/OL10000427W	4	2010-07-20T14:36:28.095870	{"created": {"type": "/type/datetime", "value": "2009-12-11T01:57:19.964652"}, "subject_places": ["France"], "subjects": ["Muslims", "National characteristics, French", "Social integration", "Cultural assimilation", "Immigrants", "Ethnic relations", "Islam", "French National characteristics"], "latest_revision": 4, "key": "/works/OL10000427W", "title": "La fracture identitaire", "authors": [{"type": {"key": "/type/author_role"}, "author": {"key": "/authors/OL3965478A"}}], "type": {"key": "/type/work"}, "last_modified": {"type": "/type/datetime", "value": "2010-07-20T14:36:28.095870"}, "revision": 4}
 /type/work	/works/OL10000471W	3	2010-04-28T06:54:19.472104	{"title": "Jamiroqua\u00ef de A \u00e0 Z", "created": {"type": "/type/datetime", "value": "2009-12-11T01:57:19.964652"}, "covers": [3140910], "last_modified": {"type": "/type/datetime", "value": "2010-04-28T06:54:19.472104"}, "latest_revision": 3, "key": "/works/OL10000471W", "authors": [{"type": "/type/author_role", "author": {"key": "/a/OL3965508A"}}], "type": {"key": "/type/work"}, "id": 45170711, "revision": 3}
 ```
+
+### Example line with multiple title keys
+
+```json
+{
+  "description": {
+    "type": "/type/text",
+    "value": "So much has how been said and written about the life and career of Michael Jackson that it has become almost impossible to disentangle the man from the myth. This book is the fruit of over 30 years of research and hundreds of exclusive interviews with a remarkable level of access to the very closest circles of the Jackson family - including Michael himself. Cutting through tabloid rumours, J. Randy Taraborrelli traces the real story behind Michael Jackson, from his drilling as a child star through the blooming of his talent to his ever-changing personal appearance and bizarre publicity stunts. This major biography includes the behind-the-scenes story to many of the landmarks in Jackson's life: his legal and commercial battles, his marriages to Lisa Marie Presley and Debbie Rowe, his passions and addictions, his children. Objective and revealing, it carries the hallmarks of all of Taraborrelli's best-sellers: impeccable research, brilliant storytelling and definitive documentation."
+  },
+  "subtitle": "The Magic and the Madness",
+  "title": "Michael Jackson",
+  "subject_places": ["United States"],
+  "subjects": [
+    "Rock musicians",
+    "Biography",
+    "Biography & Autobiography",
+    "Nonfiction",
+    "Jackson, michael, 1958-2009",
+    "Rock musicians, biography",
+    "New York Times reviewed"
+  ],
+  "subject_people": ["Michael Jackson (1958-)", "Michael Jackson (1958-2009)"],
+  "key": "/works/OL100260W",
+  "authors": [
+    {
+      "type": {
+        "key": "/type/author_role"
+      },
+      "author": {
+        "key": "/authors/OL32274A"
+      }
+    }
+  ],
+  "type": {
+    "key": "/type/work"
+  },
+  "links": [
+    {
+      "url": "http://www.nytimes.com/1991/06/16/books/in-short-nonfiction-812891.html",
+      "title": "New York Times review",
+      "type": {
+        "key": "/type/link"
+      }
+    }
+  ],
+  "covers": [11679779],
+  "latest_revision": 10,
+  "revision": 10,
+  "created": {
+    "type": "/type/datetime",
+    "value": "2009-10-17T17:59:12.548417"
+  },
+  "last_modified": {
+    "type": "/type/datetime",
+    "value": "2021-08-17T18:47:00.471963"
+  }
+}
+```
+
+## Learnings!
+
+There are a few basic things that apply to every language:
+
+- Read the file in bytes, string conversion is too expensive
+- Skip as many bytes as possible, checking each byte or window takes far too long
+- The [Boyer-Moore algorithm](https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string-search_algorithm) is pretty good, some languages have that built into the base library as a strategy
+- A custom algorithm that is fitted to the data is the best (can skip the most bytes)
+
+### File structure notes
+
+1. We need to process the file line by line, as some JSON blobs have multiple (nested) `title` fields
+1. The JSON starts at the 4th tab character on each line, which is a minimum of 50 characters from the start of the line, meaning we can skip reading those characters if we know where the start of the line is
+1. The titles often have JSON Unicode encoded characters in them
+1. The minimum length of the JSON blobs is 260, meaning once we find a title on each line, we are able to skip some more bytes
+
+### Suggested algorithm
+
+1. Store the position of the start of the line
+1. Skip 50
+1. Store the index of the opening curly brace
+1. Find the first title (TBC - need analysis)
+1. Extract, decode, and store/output the title value
+1. Skip 260 from the start of the JSON opening curly brace
+1. Repeat!
