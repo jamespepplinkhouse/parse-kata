@@ -57,7 +57,7 @@ pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(
 }
 
 pub fn extract_titles_from_buffer(buffer: &[u8]) -> Vec<Vec<u8>> {
-    let mut titles = Vec::new();
+    let mut titles = Vec::with_capacity(10000);
 
     let minimum_json_start = 50;
     let minimum_json_size = 259;
@@ -82,10 +82,6 @@ pub fn extract_titles_from_buffer(buffer: &[u8]) -> Vec<Vec<u8>> {
 
         // Move the index forward to the start of the JSON
         index = index + json_start.unwrap();
-        // println!(
-        //     "index: {:?}",
-        //     std::str::from_utf8(&buffer[index..index + 32])
-        // );
 
         // Find the first title (TBC - need analysis)
         let title_marker_index = buffer[index..]
@@ -102,10 +98,6 @@ pub fn extract_titles_from_buffer(buffer: &[u8]) -> Vec<Vec<u8>> {
             break;
         }
         let title_end = title_start + title_end_index_from_title_start.unwrap();
-        // println!(
-        //     "title: {:?}",
-        //     std::str::from_utf8(&buffer[title_start..title_end])
-        // );
 
         // Extract, decode, and store the title value
         let json_title_bytes = &buffer[title_start..title_end];
@@ -128,10 +120,6 @@ pub fn extract_titles_from_buffer(buffer: &[u8]) -> Vec<Vec<u8>> {
         if index >= buffer.len() {
             break;
         }
-        // println!(
-        //     "index: {:?}",
-        //     std::str::from_utf8(&buffer[index..index + 32])
-        // );
 
         // Move the index to the start of the next line
         let next_line_start = buffer[index..].iter().position(|&b| b == b'\n');
@@ -139,10 +127,6 @@ pub fn extract_titles_from_buffer(buffer: &[u8]) -> Vec<Vec<u8>> {
             break;
         }
         index = index + next_line_start.unwrap() + 1;
-        // println!(
-        //     "index: {:?}",
-        //     std::str::from_utf8(&buffer[index..index + 32])
-        // );
     }
 
     titles
