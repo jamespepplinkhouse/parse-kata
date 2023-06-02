@@ -44,7 +44,6 @@ pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(
     let title_marker_len = title_marker.as_bytes().len();
     let bmb_title = BMByte::from(title_marker).unwrap();
     let newline_bytes = b"\n";
-    let unicode_escape_bytes = b"\\u";
 
     let mut reader = BufReader::new(input_file);
     let mut writer = BufWriter::new(output_file);
@@ -69,8 +68,14 @@ pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(
             None => None,
         };
 
+        // If there was a tail in the current buffer, don't process it
+        let focussed_buffer = match last_newline_index {
+            Some(last_newline_index) => &buffer[..last_newline_index],
+            None => &buffer,
+        };
+
         // Boyer-Moore-MagicLen, a fast string search algorithm
-        let title_indexes: Vec<usize> = bmb_title.find_in(&buffer, 0);
+        let title_indexes: Vec<usize> = bmb_title.find_in(focussed_buffer.to_vec(), 0);
 
         // Do this part in parallel?
         // Or move this to another thread and move on
@@ -78,27 +83,13 @@ pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(
             let title_start_index = title_index + title_marker_len;
             let title_length = find_unescaped_double_quote(&buffer[title_start_index..])
                 .unwrap_or(buffer[title_start_index..].len());
-            let title_end_index = if buffer.len() >= title_start_index + title_length + 1 {
-                title_start_index + title_length + 1
-            } else {
-                title_start_index + title_length
-            };
+            let title_end_index = title_start_index + title_length + 1;
 
             // Title bytes including quotes (JSON value)
             let json_title_bytes = &buffer[title_start_index - 1..title_end_index];
+            let title: String = serde_json::from_slice(json_title_bytes).unwrap_or(String::new());
 
-            if json_title_bytes
-                .windows(unicode_escape_bytes.len())
-                .any(|window| window == unicode_escape_bytes)
-            {
-                // Serde - JSON unicode escape sequences are decoded
-                let title: String =
-                    serde_json::from_slice(json_title_bytes).unwrap_or(String::new());
-                writer.write(&title.as_bytes())?;
-            } else {
-                writer.write(json_title_bytes)?;
-            }
-
+            writer.write(&title.as_bytes())?;
             writer.write(newline_bytes.as_slice())?;
         }
     }
