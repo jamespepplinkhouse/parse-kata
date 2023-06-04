@@ -83,6 +83,7 @@ pub fn extract_titles_from_buffer(buffer: &[u8]) -> Vec<Vec<u8>> {
         index = index + json_start.unwrap();
 
         // Find the first title (TBC - need analysis)
+        // "Slow", but boyer_moore_magiclen is slower!
         let title_marker_index = buffer[index..]
             .windows(title_marker.len())
             .position(|window| window == title_marker);
@@ -111,6 +112,7 @@ pub fn extract_titles_from_buffer(buffer: &[u8]) -> Vec<Vec<u8>> {
         }
 
         // Move the index to the start of the next line
+        // "Slow"
         let next_line_start = buffer[index..].iter().position(|&b| b == b'\n');
         if next_line_start.is_none() {
             break;
