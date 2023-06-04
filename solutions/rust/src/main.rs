@@ -22,25 +22,18 @@ struct Opt {
     fast_mode: bool,
 }
 
-fn main() -> Result<(), Box<dyn Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
     let opt = Opt::from_args();
 
-    let process = match opt.fast_mode {
-        true => {
-            println!("Fast mode enabled: using custom byte parser");
-            process_input_file_bytes
-        }
-        false => {
-            println!("Normal mode enabled: using stream of lines and JSON parser");
-            process_input_file_json
-        }
-    };
-
-    process(&opt.input_file, &opt.output_file)
-        .map_err(|err| println!("Error processing file: {}", err))
-        .ok();
+    if opt.fast_mode {
+        println!("Fast mode enabled: using custom byte parser");
+        process_input_file_bytes(&opt.input_file, &opt.output_file).await?;
+    } else {
+        println!("Normal mode enabled: using stream of lines and JSON parser");
+        process_input_file_json(&opt.input_file, &opt.output_file).await?;
+    }
 
     println!("Processing complete!");
-
     Ok(())
 }

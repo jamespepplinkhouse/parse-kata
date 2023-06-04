@@ -1,25 +1,26 @@
 use serde_json::Value;
 use std::error::Error;
-use std::fs::File;
-use std::io::BufRead;
-use std::io::BufReader;
-use std::io::BufWriter;
-use std::io::Read;
-use std::io::Write;
+use tokio::fs::File;
+use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader, BufWriter};
+use tokio::task::JoinHandle;
 
-pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(), Box<dyn Error>> {
-    let input_file = File::open(input_path)?;
-    let output_file = File::create(output_path)?;
+pub async fn process_input_file_bytes(
+    input_path: &str,
+    output_path: &str,
+) -> Result<(), Box<dyn Error>> {
+    let input_file = File::open(input_path).await?;
+    let output_file = File::create(output_path).await?;
     let buffer_size = 1 * 1024 * 1024; // 1MB
     let newline = b"\n";
 
     let mut reader = BufReader::new(input_file);
     let mut writer = BufWriter::new(output_file);
     let mut buffer = vec![0; buffer_size];
+    let mut handles: Vec<JoinHandle<_>> = vec![];
 
     // Read the file in chunks of buffer_size
     let mut last_tail: Option<Vec<u8>> = None;
-    while let Ok(bytes_read) = reader.read(&mut buffer) {
+    while let Ok(bytes_read) = reader.read(&mut buffer).await {
         if bytes_read == 0 {
             break; // End of file reached
         }
@@ -38,20 +39,27 @@ pub fn process_input_file_bytes(input_path: &str, output_path: &str) -> Result<(
 
         // If there was a tail in the current buffer, don't process it
         let buffer_without_tail = match last_newline_index {
-            Some(last_newline_index) => &buffer[..last_newline_index],
-            None => &buffer,
+            Some(last_newline_index) => buffer[..last_newline_index].to_vec(),
+            None => buffer.clone(),
         };
 
-        let titles = extract_titles_from_buffer(&buffer_without_tail);
+        // Spawn a new task to process this chunk of the buffer.
+        let handle = tokio::spawn(async move { extract_titles_from_buffer(&buffer_without_tail) });
 
+        handles.push(handle);
+    }
+
+    // Iterate over handles to ensure the ordering
+    for handle in handles {
+        let titles = handle.await?;
         for title in titles {
-            writer.write(&title)?;
-            writer.write(newline)?;
+            writer.write_all(&title).await?;
+            writer.write_all(newline).await?;
         }
     }
 
     // Flush the writer to ensure all output is written to the file
-    writer.flush()?;
+    writer.flush().await?;
 
     Ok(())
 }
@@ -144,6 +152,37 @@ pub fn find_unescaped_double_quote(buffer: &[u8]) -> Option<usize> {
     None
 }
 
+pub async fn process_input_file_json(
+    input_path: &str,
+    output_path: &str,
+) -> Result<(), Box<dyn Error>> {
+    let input_file = File::open(input_path).await?;
+    let output_file = File::create(output_path).await?;
+    let buffer_size = 1 * 1024 * 1024; // 1MB
+    let input_buffered_reader = BufReader::with_capacity(buffer_size, input_file);
+    let mut output_buffered_writer = BufWriter::new(output_file);
+
+    let mut line_stream = input_buffered_reader.lines();
+
+    while let Ok(Some(line)) = line_stream.next_line().await {
+        if let Some(json_string) = line.find('{').map(|start_index| &line[start_index..]) {
+            let json_value: Value = serde_json::from_str(json_string).map_err(|e| e.to_string())?;
+            if let Some(title) = json_value.get("title") {
+                if let Some(title_str) = title.as_str() {
+                    output_buffered_writer
+                        .write_all(format!("{}\n", title_str).as_bytes())
+                        .await?;
+                }
+            }
+        }
+    }
+
+    // Flush the writer to ensure all output is written to the file
+    output_buffered_writer.flush().await?;
+
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -195,31 +234,4 @@ mod tests {
         let buffer: [u8; 0] = [];
         assert_eq!(find_unescaped_double_quote(&buffer), None);
     }
-}
-
-pub fn process_input_file_json(input_path: &str, output_path: &str) -> Result<(), Box<dyn Error>> {
-    let input_file = File::open(input_path)?;
-    let output_file = File::create(output_path)?;
-    let buffer_size = 1 * 1024 * 1024; // 1MB
-    let input_buffered_reader = BufReader::with_capacity(buffer_size, input_file);
-    let mut output_buffered_writer = BufWriter::new(output_file);
-
-    let mut line_stream = input_buffered_reader.lines();
-
-    while let Some(line_result) = line_stream.next() {
-        let line = line_result?;
-        if let Some(json_string) = line.find('{').map(|start_index| &line[start_index..]) {
-            let json_value: Value = serde_json::from_str(json_string).map_err(|e| e.to_string())?;
-            if let Some(title) = json_value.get("title") {
-                if let Some(title_str) = title.as_str() {
-                    output_buffered_writer.write_all(format!("{}\n", title_str).as_bytes())?;
-                }
-            }
-        }
-    }
-
-    // Flush the writer to ensure all output is written to the file
-    output_buffered_writer.flush()?;
-
-    Ok(())
 }
