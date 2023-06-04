@@ -62,7 +62,6 @@ pub fn extract_titles_from_buffer(buffer: &[u8]) -> Vec<Vec<u8>> {
     let minimum_json_start = 50;
     let minimum_json_size = 259;
     let title_marker = b"\"title\": \"";
-    let unicode_escape_bytes = b"\\u";
 
     let mut index = 0;
 
@@ -101,19 +100,7 @@ pub fn extract_titles_from_buffer(buffer: &[u8]) -> Vec<Vec<u8>> {
 
         // Extract, decode, and store the title value
         let json_title_bytes = &buffer[title_start..title_end];
-        if json_title_bytes.iter().position(|&b| b == b'\"').is_some()
-            || json_title_bytes
-                .windows(unicode_escape_bytes.len())
-                .any(|window| window == unicode_escape_bytes)
-        {
-            // Serde - JSON unicode escape sequences are decoded
-            let json_title_including_double_quotes = &buffer[title_start - 1..title_end + 1];
-            let title: String =
-                serde_json::from_slice(json_title_including_double_quotes).unwrap_or(String::new());
-            titles.push(title.into_bytes());
-        } else {
-            titles.push(json_title_bytes.to_vec());
-        }
+        titles.push(decode_json_string(json_title_bytes).as_bytes().to_vec());
 
         // Skip to the minimum possible end of the JSON
         index = index + minimum_json_size;
@@ -151,6 +138,21 @@ pub fn find_unescaped_double_quote(buffer: &[u8]) -> Option<usize> {
     }
 
     None
+}
+
+pub fn decode_json_string(bytes: &[u8]) -> String {
+    let re = regex::Regex::new(r"(\\u[0-9a-fA-F]{4})").unwrap();
+    let str = std::str::from_utf8(bytes);
+    let mut result = re
+        .replace_all(str.unwrap_or(""), |caps: &regex::Captures| {
+            let capture = caps.get(1).unwrap().as_str();
+            let u = u32::from_str_radix(&capture[2..], 16).unwrap();
+            char::from_u32(u).unwrap().to_string()
+        })
+        .to_string();
+
+    result = result.replace(r#"\""#, r#"""#);
+    result
 }
 
 #[cfg(test)]
@@ -203,6 +205,13 @@ mod tests {
     fn find_unescaped_double_quote_handles_empty_buffer() {
         let buffer: [u8; 0] = [];
         assert_eq!(find_unescaped_double_quote(&buffer), None);
+    }
+
+    #[test]
+    fn test_decode_json_string() {
+        let input = r#"\"Alo, Harika Han\u0131m nas\u0131ls\u0131n\u0131z?\""#.as_bytes();
+        let expected = r#""Alo, Harika Hanım nasılsınız?""#;
+        assert_eq!(decode_json_string(input), expected);
     }
 }
 

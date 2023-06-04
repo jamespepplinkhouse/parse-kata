@@ -1,7 +1,7 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use parse_kata::find_index_of_last_incomplete_line;
+use parse_kata::{decode_json_string, find_index_of_last_incomplete_line};
 
-pub fn criterion_benchmark(c: &mut Criterion) {
+pub fn find_index_of_last_incomplete_line_benchmark(c: &mut Criterion) {
     let s = r#"/type/work	/works/OL10509530W	1	2009-12-11T03:05:25.643398	{"title": "La litterature Francaise aux 19e et 20e siecles", "created": {"type": "/type/datetime", "value": "2009-12-11T03:05:25.643398"}, "last_modified": {"type": "/type/datetime", "value": "2009-12-11T03:05:25.643398"}, "latest_revision": 1, "key": "/works/OL10509530W", "authors": [{"type": "/type/author_role", "author": {"key": "/authors/OL4360923A"}}], "type": {"key": "/type/work"}, "revision": 1}
     /type/work	/works/OL10509569W	2	2010-12-19T07:49:17.178329	{"title": "Les petites filles et los queriers", "created": {"type": "/type/datetime", "value": "2009-12-11T03:05:25.643398"}, "last_modified": {"type": "/type/datetime", "value": "2010-12-19T07:49:17.178329"}, "latest_revision": 2, "key": "/works/OL10509569W", "authors": [{"type": {"key": "/type/author_role"}, "author": {"key": "/authors/OL4360936A"}}], "type": {"key": "/type/work"}, "revision": 2}
     /type/work	/works/OL10509945W	2	2017-03-27T22:01:03.431788	{"title": "Twenty-five years", "created": {"type": "/type/datetime", "value": "2009-12-11T03:05:25.643398"}, "last_modified": {"type": "/type/datetime", "value": "2017-03-27T22:01:03.431788"}, "latest_revision": 2, "key": "/works/OL10509945W", "authors": [{"type": {"key": "/type/author_role"}, "author": {"key": "/authors/OL115188A"}}], "type": {"key": "/type/work"}, "revision": 2}
@@ -32,5 +32,21 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     });
 }
 
-criterion_group!(benches, criterion_benchmark);
+pub fn json_to_rust_unicode_benchmark(c: &mut Criterion) {
+    let input = r#""example\u0047\u0075hello\u0069\u0064world""#.as_bytes();
+
+    c.bench_function("decode_json_string", |b| {
+        b.iter(|| decode_json_string(black_box(input)))
+    });
+
+    c.bench_function("serde_json", |b| {
+        b.iter(|| serde_json::from_slice(black_box(input)).unwrap_or(String::new()));
+    });
+}
+
+criterion_group!(
+    benches,
+    find_index_of_last_incomplete_line_benchmark,
+    json_to_rust_unicode_benchmark
+);
 criterion_main!(benches);
