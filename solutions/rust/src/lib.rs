@@ -62,6 +62,7 @@ pub fn extract_titles_from_buffer(buffer: &[u8]) -> Vec<Vec<u8>> {
     let minimum_json_start = 50;
     let minimum_json_size = 259;
     let title_marker = b"\"title\": \"";
+    let unicode_escape_bytes = b"\\u";
 
     let mut index = 0;
 
@@ -99,11 +100,21 @@ pub fn extract_titles_from_buffer(buffer: &[u8]) -> Vec<Vec<u8>> {
         }
         let title_end = title_start + title_end_index_from_title_start.unwrap();
 
-        // Serde - JSON unicode escape sequences are decoded
-        let json_title_including_double_quotes = &buffer[title_start - 1..title_end + 1];
-        let title: String =
-            serde_json::from_slice(json_title_including_double_quotes).unwrap_or(String::new());
-        titles.push(title.into_bytes());
+        // Extract, decode, and store the title value
+        let json_title_bytes = &buffer[title_start..title_end];
+        if json_title_bytes.iter().position(|&b| b == b'\"').is_some()
+            || json_title_bytes
+                .windows(unicode_escape_bytes.len())
+                .any(|window| window == unicode_escape_bytes)
+        {
+            // Serde - JSON unicode escape sequences are decoded
+            let json_title_including_double_quotes = &buffer[title_start - 1..title_end + 1];
+            let title: String =
+                serde_json::from_slice(json_title_including_double_quotes).unwrap_or(String::new());
+            titles.push(title.into_bytes());
+        } else {
+            titles.push(json_title_bytes.to_vec());
+        }
 
         // Skip to the minimum possible end of the JSON
         index = index + minimum_json_size;
