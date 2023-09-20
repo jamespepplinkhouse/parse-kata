@@ -49,3 +49,11 @@
 
 - Set up consumers (based on machine CPU count) with a callback to get next job
 - Each job has an integer ID (chunk #), and the byte array
+
+# Rust, simd-json
+
+./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o 59.26s user 3.09s system 100% cpu 1:01.81 total
+
+# Rust, serde_json
+
+./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o 95.67s user 3.30s system 97% cpu 1:41.13 total

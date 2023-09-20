@@ -1,4 +1,5 @@
-use serde_json::Value;
+use simd_json::borrowed::Value;
+use simd_json::ValueAccess;
 use std::error::Error;
 use tokio::fs::File;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader, BufWriter};
@@ -16,19 +17,27 @@ pub async fn process_input_file_json(
     let mut line_stream = input_buffered_reader.lines();
 
     while let Ok(Some(line)) = line_stream.next_line().await {
-        if let Some(json_string) = line.find('{').map(|start_index| &line[start_index..]) {
-            let json_value: Value = serde_json::from_str(json_string).map_err(|e| e.to_string())?;
-            if let Some(title) = json_value.get("title") {
-                if let Some(title_str) = title.as_str() {
-                    output_buffered_writer
-                        .write_all(format!("{}\n", title_str).as_bytes())
-                        .await?;
+        if let Some(start_index) = line.find('{') {
+            let mut json_string = String::from(&line[start_index..]);
+            let json_value: Result<Value, _>;
+
+            unsafe {
+                json_value = simd_json::from_str(json_string.as_mut_str());
+            }
+
+            if let Ok(json_value) = json_value {
+                if let Some(title) = json_value.get("title") {
+                    if let Some(title_str) = title.as_str() {
+                        output_buffered_writer
+                            .write_all(format!("{}\n", title_str).as_bytes())
+                            .await?;
+                    }
                 }
             }
         }
     }
 
-    // Flush the writer to ensure all output is written to the file
+    // Flush the writer
     output_buffered_writer.flush().await?;
 
     Ok(())
