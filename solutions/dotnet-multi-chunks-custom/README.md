@@ -15,15 +15,15 @@ dotnet tool install --global dotnet-trace -a arm64
 ```sh
 dotnet new sln -o dotnet
 cd dotnet
-dotnet new console -o ParseKata -f net7.0
+dotnet new console -o ParseKata -f net8.0
 mv ./ParseKata/Class1.cs ./ParseKata/ParseKata.cs
 dotnet sln add ./ParseKata/ParseKata.csproj
 
-dotnet new xunit -o ParseKata.Tests -f net7.0
+dotnet new xunit -o ParseKata.Tests -f net8.0
 dotnet add ./ParseKata.Tests/ParseKata.Tests.csproj reference ./ParseKata/ParseKata.csproj
 dotnet sln add ./ParseKata.Tests/ParseKata.Tests.csproj
 
-dotnet new console -o ParseKata.Benchmark -f net7.0
+dotnet new console -o ParseKata.Benchmark -f net8.0
 dotnet add ./ParseKata.Benchmark/ParseKata.Benchmark.csproj reference ./ParseKata/ParseKata.csproj
 dotnet sln add ./ParseKata.Benchmark/ParseKata.Benchmark.csproj
 
@@ -58,7 +58,7 @@ I recommend Speedscope!
 ```sh
 cd ParseKata.Benchmark
 dotnet build --configuration Release
-./bin/Release/net7.0/ParseKata.Benchmark
+./bin/Release/net8.0/ParseKata.Benchmark
 ```
 
 Example output:
