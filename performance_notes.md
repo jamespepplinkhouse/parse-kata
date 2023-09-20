@@ -73,3 +73,7 @@
 # C# - full, single core
 
 ./bin/Release/net7.0/ParseKata -i ../../../data/ol_dump_works_2022-09-30.txt 48.33s user 4.06s system 98% cpu 52.920 total
+
+# Python - full, lines, json
+
+./parse-kata.py ../../data/ol_dump_works_2022-09-30.txt 102.66s user 7.03s system 99% cpu 1:50.10 total
