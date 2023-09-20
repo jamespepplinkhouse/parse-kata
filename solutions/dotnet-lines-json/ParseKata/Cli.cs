@@ -14,9 +14,4 @@ public class Options
 
   [Option('o', "outputFilePath", Required = true, HelpText = "Output file path")]
   public string OutputFilePath { get; set; }
-
-  [Option('f', "fast",
-    Default = false,
-    HelpText = "Use the fast custom parser implementation")]
-  public bool Fast { get; set; }
 }

@@ -7,7 +7,7 @@ public class JsonParser
   private Options _options { get; set; }
   public JsonParser(Options options)
   {
-    this._options = options;
+    _options = options;
   }
 
   public void Parse()
@@ -23,7 +23,7 @@ public class JsonParser
                 if (jsonStartIndex == -1)
                   return "";
 
-                return this.ExtractTitle(line.AsSpan().Slice(jsonStartIndex, line.Length - jsonStartIndex));
+                return ExtractTitle(line.AsSpan().Slice(jsonStartIndex, line.Length - jsonStartIndex));
               });
 
       foreach (var title in titles)
@@ -31,7 +31,7 @@ public class JsonParser
     }
   }
 
-  public string ExtractTitle(System.ReadOnlySpan<char> rawJson)
+  public string ExtractTitle(ReadOnlySpan<char> rawJson)
   {
     var work = JsonSerializer.Deserialize<Work>(
       rawJson
