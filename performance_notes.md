@@ -77,3 +77,7 @@
 # Python - full, lines, json
 
 ./parse-kata.py ../../data/ol_dump_works_2022-09-30.txt 102.66s user 7.03s system 99% cpu 1:50.10 total
+
+# bash-single-lines-json
+
+./run.sh ~/git/parse-kata/data/ol_dump_works_2022-09-30.txt 438.35s user 13.66s system 171% cpu 4:23.97 total

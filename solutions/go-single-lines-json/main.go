@@ -6,11 +6,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/pkg/profile"
+	// "github.com/pkg/profile"
 )
 
 func main() {
-	defer profile.Start(profile.ProfilePath(".")).Stop()
+	// defer profile.Start(profile.ProfilePath(".")).Stop()
 
 	args := os.Args[1:]
 	if len(args) != 2 {
