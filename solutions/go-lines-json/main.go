@@ -48,7 +48,7 @@ func main() {
 	newLine := []byte("\n")
 
 	for scanner.Scan() {
-		_, _ = datawriter.Write(ParseLineRaw(scanner.Bytes()))
+		_, _ = datawriter.Write(ParseLineJson(scanner.Bytes()))
 		datawriter.Write(newLine)
 	}
 

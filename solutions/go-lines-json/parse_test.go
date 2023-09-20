@@ -10,10 +10,3 @@ func BenchmarkParseLineJson(b *testing.B) {
 		ParseLineJson(line)
 	}
 }
-
-// 21 ns/op
-func BenchmarkParseLineRaw(b *testing.B) {
-	for n := 0; n < b.N; n++ {
-		ParseLineRaw(line)
-	}
-}
