@@ -13,6 +13,6 @@ These are not proper benchmarks!
 | go-single-lines-json       |       20 |            15108 |                               |
 | rust-single-lines-json     |       57 |            10576 | <ul><li>PGO enabled</li></ul> |
 | nodejs-single-lines-json   |       71 |            93968 |                               |
-| python-single-lines-json   |      110 |                  |                               |
+| python-single-lines-json   |      110 |            18272 |                               |
 | bash-single-lines-json     |      263 |                  |                               |
 | zig-single-lines-json      |        0 |                  |                               |
