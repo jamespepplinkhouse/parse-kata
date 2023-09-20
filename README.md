@@ -43,9 +43,11 @@ Note: Sample input and correct output data is provided in the `samples/` directo
 ## Solutions
 
 Solutions are located in the `solutions` directory using the following naming convention:
-`solutions/{lang}-{chunks|lines}-{custom|json}`
+`solutions/{lang}-{single|multi}-{lines|chunks}-{json|custom}`
 
 - `lang`: the main programming language or technology
+- `single`: single threaded solution
+- `multi`: multi-threaded solution
 - `chunks`: the input file is read in chunks of bytes/string
 - `lines`: the input file is read in lines of string
 - `custom`: the search and/or extraction algorithm is custom (usually better performance)
