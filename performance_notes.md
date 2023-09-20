@@ -54,6 +54,22 @@
 
 ./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o 59.26s user 3.09s system 100% cpu 1:01.81 total
 
+# Rust, PGO simd-json
+
+./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o 55.14s user 3.07s system 101% cpu 57.554 total
+
 # Rust, serde_json
 
 ./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o 95.67s user 3.30s system 97% cpu 1:41.13 total
+
+# C# - full, multiple cores
+
+24s
+
+# C# - full, multi-core, .NET 8.0
+
+./bin/Release/net8.0/ParseKata -i ../../../data/ol_dump_works_2022-09-30.txt 48.27s user 7.05s system 323% cpu 17.089 total
+
+# C# - full, single core
+
+./bin/Release/net7.0/ParseKata -i ../../../data/ol_dump_works_2022-09-30.txt 48.33s user 4.06s system 98% cpu 52.920 total
