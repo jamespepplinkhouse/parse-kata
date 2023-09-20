@@ -1,5 +1,4 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use parse_kata::find_index_of_last_incomplete_line;
 
 pub fn criterion_benchmark(c: &mut Criterion) {
     let s = r#"/type/work	/works/OL10509530W	1	2009-12-11T03:05:25.643398	{"title": "La litterature Francaise aux 19e et 20e siecles", "created": {"type": "/type/datetime", "value": "2009-12-11T03:05:25.643398"}, "last_modified": {"type": "/type/datetime", "value": "2009-12-11T03:05:25.643398"}, "latest_revision": 1, "key": "/works/OL10509530W", "authors": [{"type": "/type/author_role", "author": {"key": "/authors/OL4360923A"}}], "type": {"key": "/type/work"}, "revision": 1}
@@ -25,11 +24,11 @@ pub fn criterion_benchmark(c: &mut Criterion) {
     /type/work	/works/OL10513382W	4	2020-10-10T23:43:03.990436	{"last_modified": {"type": "/type/datetime", "value": "2020-10-10T23:43:03.990436"}, "title": "Insects", "created": {"type": "/type/datetime", "value": "2009-12-11T03:05:42.688103"}, "subjects": ["Insects, pictorial works"], "latest_revision": 4, "key": "/works/OL10513382W", "authors": [{"type": {"key": "/type/author_role"}, "author": {"key": "/authors/OL841345A"}}], "type": {"key": "/type/work"}, "revision": 4}
     /type/work	/works/OL10513815W	3	2019-12-27T16:30:46.678777	{"title": "A manual of practical chemistry", "created": {"type": "/type/datetime", "value": "2009-12-11T03:05:49.332401"}, "last_modified": {"type": "/type/datetime", "value": "2019-12-27T16:30:46.678777"}, "latest_revision": 3, "key": "/works/OL10513815W", "authors": [{"type": {"key": "/type/author_role"}, "author": {"key": "/authors/OL5634689A"}}], "type": {"key": "/type/work"}, "revision": 3}
     /type/work	/works/OL10513868W	1	2009-12-11T03:05:49.332401	{"title": "Polynucle"#;
-    let v: Vec<u8> = s.as_bytes().to_vec();
+    let _: Vec<u8> = s.as_bytes().to_vec();
 
-    c.bench_function("find_index_of_last_incomplete_line", |b| {
-        b.iter(|| find_index_of_last_incomplete_line(black_box(&v)))
-    });
+    // c.bench_function("find_index_of_last_incomplete_line", |b| {
+    //     b.iter(|| find_index_of_last_incomplete_line(black_box(&v)))
+    // });
 }
 
 criterion_group!(benches, criterion_benchmark);
