@@ -6,8 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rayon = "1.5.1"
-futures = "0.3.17"
 structopt = "0.3.26"
 tokio = { version = "1.28.2", features = ["full"] }
 simd-json = "0.10.7"

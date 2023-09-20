@@ -25,14 +25,10 @@ pub async fn process_input_file_json(
                 json_value = simd_json::from_str(json_string.as_mut_str());
             }
 
-            if let Ok(json_value) = json_value {
-                if let Some(title) = json_value.get("title") {
-                    if let Some(title_str) = title.as_str() {
-                        output_buffered_writer
-                            .write_all(format!("{}\n", title_str).as_bytes())
-                            .await?;
-                    }
-                }
+            if let Some(title_str) = json_value.get("title").and_then(|t| t.as_str()) {
+                output_buffered_writer
+                    .write_all(format!("{}\n", title_str).as_bytes())
+                    .await?;
             }
         }
     }
