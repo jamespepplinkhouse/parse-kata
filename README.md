@@ -37,8 +37,19 @@ Note: Sample input and correct output data is provided in the `samples/` directo
 - At the time of writing, the `ol_dump_works_2021-11-30.txt` file contains 24,010,896 lines (13GB)
 - Solutions should not attempt to load the whole input or output in memory (use streams)!
 - Try a bash solution as a starting reference point (e.g. sed)
-- THere are unicode characters, those should be converted to UTF-8
+- There are unicode characters, those should be converted to UTF-8
 - There are data quality issues, like leading spaces, or single quotes around titles, but for this exercise I'll just keep it raw; fixing that stuff is busy work that's not important
+
+## Solutions
+
+Solutions are located in the `solutions` directory using the following naming convention:
+`solutions/{lang}-{chunks|lines}-{custom|json}`
+
+- `lang`: the main programming language or technology
+- `chunks`: the input file is read in chunks of bytes/string
+- `lines`: the input file is read in lines of string
+- `custom`: the search and/or extraction algorithm is custom (usually better performance)
+- `json`: the extraction algorithm uses a JSON parser
 
 ## Data format
 
