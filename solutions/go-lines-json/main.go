@@ -40,6 +40,7 @@ func main() {
 	defer datawriter.Flush()
 	defer output.Close()
 
+	// The split function defaults to ScanLines.
 	scanner := bufio.NewScanner(input)
 	maxCapacity := 1024 * 1024
 	buf := make([]byte, maxCapacity)
