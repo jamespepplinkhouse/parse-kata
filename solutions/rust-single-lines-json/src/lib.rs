@@ -30,17 +30,16 @@ pub fn process_input_file_json(
             break;
         }
 
+        // Find the start of the JSON document
         let json_start_index = line_buffer.iter().position(|&x| x == b'{');
-        let json_value: Result<Value, _>;
 
+        let json_value: Result<Value, _>;
         if let Some(json_start_index) = json_start_index {
             json_value = simd_json::from_slice(line_buffer[json_start_index..].as_mut());
-        } else {
-            continue;
-        }
 
-        if let Some(title_str) = json_value.get("title").and_then(|t| t.as_str()) {
-            output_buffered_writer.write(format!("{}\n", title_str).as_bytes())?;
+            if let Some(title_str) = json_value.get("title").and_then(|t| t.as_str()) {
+                output_buffered_writer.write(format!("{}\n", title_str).as_bytes())?;
+            }
         }
     }
 
