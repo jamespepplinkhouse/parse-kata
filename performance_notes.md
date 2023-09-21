@@ -22,12 +22,18 @@
 ./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o    1.59s  user 2.21s system 71% cpu 5.311 total
 ```
 
-# Rust - Lines of String by read_until - Input file read; producer-consumer model
+# Rust - Lines of bytes by read_until - Input file read; producer-consumer model
 
 1.48x slower than single threaded read_until
 
 ```
 ./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o    54.41s  user 10.13s system 83% cpu 1:17.24 total
+```
+
+# Rust - Lines of bytes, use simd_json only where required
+
+```
+./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o    8.01s  user 2.55s system 95% cpu 11.049 total
 ```
 
 # C# - Byte chunks approach - Input file read only; no parsing, or output file
