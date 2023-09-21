@@ -30,8 +30,14 @@ pub fn process_input_file_json(
             break;
         }
 
+        // Find title directly, with the following rules, otherwise fall back to JSON parsing:
+        // - There should only be one title per line
+        // - There are no unicode escaped characters in the title
+
         // Find the start of the JSON document
-        let json_start_index = line_buffer.iter().position(|&x| x == b'{');
+        // We can skip the first 50 chars here because we know for sure (based on analysing the input file)
+        // that the next title is more than 50 chars away
+        let json_start_index = line_buffer.iter().skip(50).position(|&x| x == b'{');
 
         let json_value: Result<Value, _>;
         if let Some(json_start_index) = json_start_index {
