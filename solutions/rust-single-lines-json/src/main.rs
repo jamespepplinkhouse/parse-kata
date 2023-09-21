@@ -19,7 +19,5 @@ struct Opt {
 
 fn main() -> Result<(), Box<dyn Error>> {
     let opt = Opt::from_args();
-    println!("Processing started!");
-    println!("Processing complete!");
     return process_input_file_json(&opt.input_file, &opt.output_file);
 }
