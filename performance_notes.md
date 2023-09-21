@@ -1,17 +1,19 @@
 # Rust - Byte chunks approach - Input file read only; no parsing, or output file
 
 ```
-./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o -f 1.03s user 2.10s system 60% cpu 5.190 total
-./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o -f 0.98s user 1.95s system 60% cpu 4.823 total
 ./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o -f 0.97s user 1.95s system 60% cpu 4.810 total
 ```
 
 # Rust - Lines of String approach - Input file read only; no parsing, or output file
 
 ```
-./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o 3.90s user 1.66s system 92% cpu 6.021 total
-./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o 3.81s user 1.69s system 92% cpu 5.950 total
 ./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o 3.88s user 1.68s system 93% cpu 5.946 total
+```
+
+# Rust - Lines of String by read_until - Input file read only; no parsing, or output file
+
+```
+./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o 1.07s user 2.22s system 67% cpu 4.906 total
 ```
 
 # C# - Byte chunks approach - Input file read only; no parsing, or output file
@@ -33,8 +35,6 @@
 # C# - Byte chunks approach - Full
 
 ```
-./bin/Release/net7.0/ParseKata -i ../../../data/ol_dump_works_2022-09-30.txt 6.59s user 2.74s system 182% cpu 5.100 total
-./bin/Release/net7.0/ParseKata -i ../../../data/ol_dump_works_2022-09-30.txt 6.52s user 2.57s system 184% cpu 4.942 total
 ./bin/Release/net7.0/ParseKata -i ../../../data/ol_dump_works_2022-09-30.txt 6.51s user 2.54s system 187% cpu 4.818 total
 ```
 
