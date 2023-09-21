@@ -17,11 +17,9 @@ struct Opt {
     output_file: String,
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     let opt = Opt::from_args();
     println!("Processing started!");
-    process_input_file_json(&opt.input_file, &opt.output_file).await?;
     println!("Processing complete!");
-    Ok(())
+    return process_input_file_json(&opt.input_file, &opt.output_file);
 }
