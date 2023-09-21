@@ -22,6 +22,14 @@
 ./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o    1.59s  user 2.21s system 71% cpu 5.311 total
 ```
 
+# Rust - Lines of String by read_until - Input file read; producer-consumer model
+
+1.48x slower than single threaded read_until
+
+```
+./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o    54.41s  user 10.13s system 83% cpu 1:17.24 total
+```
+
 # C# - Byte chunks approach - Input file read only; no parsing, or output file
 
 ```
