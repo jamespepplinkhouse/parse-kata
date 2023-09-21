@@ -1,3 +1,4 @@
+use memchr::memmem;
 use std::error::Error;
 use std::fs::File;
 use std::io::{BufRead, BufReader, BufWriter, Write};
@@ -18,6 +19,7 @@ pub fn process_input_file_json(
     let mut line_buffer = Vec::new();
 
     let title_marker = b"\"title\": \"";
+    let finder = memmem::Finder::new(title_marker);
 
     loop {
         line_buffer.clear();
@@ -31,9 +33,7 @@ pub fn process_input_file_json(
         }
 
         // Find the start index of the title value
-        let maybe_title_marker_index = line_buffer
-            .windows(title_marker.len())
-            .position(|window| window == title_marker);
+        let maybe_title_marker_index = finder.find(line_buffer.as_slice());
 
         // If we didn't find a title, bail out for next loop
         if maybe_title_marker_index.is_none() {

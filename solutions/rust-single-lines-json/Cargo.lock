@@ -474,6 +474,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "memchr"
+version = "2.6.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8f232d6ef707e1956a43342693d2a31e72989554d58299d7a88738cc95b0d35c"
+
+[[package]]
 name = "memoffset"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -518,6 +524,7 @@ name = "parse-kata"
 version = "0.1.0"
 dependencies = [
  "criterion",
+ "memchr",
  "simd-json",
  "structopt",
 ]
