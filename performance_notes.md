@@ -16,6 +16,12 @@
 ./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o 1.07s user 2.22s system 67% cpu 4.906 total
 ```
 
+# Rust - Lines of String by read_until - Input file read; find JSON start index, no output file
+
+```
+./target/release/parse-kata -i ../../data/ol_dump_works_2022-09-30.txt -o    1.59s  user 2.21s system 71% cpu 5.311 total
+```
+
 # C# - Byte chunks approach - Input file read only; no parsing, or output file
 
 ```
