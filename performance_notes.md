@@ -101,3 +101,7 @@
 # bash-single-lines-json
 
 ./run.sh ~/git/parse-kata/data/ol_dump_works_2022-09-30.txt 438.35s user 13.66s system 171% cpu 4:23.97 total
+
+# C# - dotnet-multi-chunks-custom - single thread
+
+./bin/Release/net8.0/ParseKata -i ../../../data/ol_dump_works_2022-09-30.txt 5.41s user 2.42s system 73% cpu 10.707 total
