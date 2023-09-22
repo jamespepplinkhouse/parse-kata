@@ -1,7 +1,8 @@
 use memchr::memmem;
+use memmap::MmapOptions;
 use std::error::Error;
 use std::fs::File;
-use std::io::{BufRead, BufReader, BufWriter, Write};
+use std::io::{BufWriter, Write};
 
 pub fn process_input_file_json(
     input_file_path: &str,
@@ -9,62 +10,62 @@ pub fn process_input_file_json(
 ) -> Result<(), Box<dyn Error>> {
     // Input file
     let input_file = File::open(input_file_path)?;
-    let mut reader = BufReader::new(input_file);
+    let input_memmap = unsafe { MmapOptions::new().map(&input_file)? };
 
     // Output file
     let output_file = File::create(output_file_path)?;
     let mut output_buffered_writer = BufWriter::new(output_file);
 
     // Buffer for each line
-    let mut line_buffer = Vec::new();
+    // let mut line_buffer = Vec::new();
 
     let title_marker = b"\"title\": \"";
-    let finder = memmem::Finder::new(title_marker);
+    let title_finder = memmem::Finder::new(title_marker);
+    // let newline_finder = memmem::Finder::new(b"\n");
 
-    loop {
-        line_buffer.clear();
+    // let chunk_size = 1024 * 1024 * 1;
 
-        // Read line into buffer
-        let bytes_read = reader.read_until(b'\n', &mut line_buffer)?;
+    title_finder
+        .find_iter(&input_memmap)
+        .for_each(|title_marker_index| {
+            // println!("Found title marker at {}", title_marker_index);
+        });
 
-        // Exit loop if EOF
-        if bytes_read == 0 {
-            break;
-        }
+    // input_memmap.chunks(chunk_size).for_each(|chunk| {
+    //     println!("Processing chunk of size {}", chunk.len());
+    //     title_finder
+    //         .find_iter(chunk)
+    //         .for_each(|title_marker_index| {
+    //             println!("Found title marker at {}", title_marker_index);
+    //             // // Find the start index of the title value
+    //             // let title_start = title_marker_index + title_marker.len();
 
-        // Find the start index of the title value
-        let maybe_title_marker_index = finder.find(line_buffer.as_slice());
+    //             // // Find the end index of the title value
+    //             // let title_end_index_from_title_start =
+    //             //     find_unescaped_double_quote(&chunk[title_start..]);
+    //             // if title_end_index_from_title_start.is_none() {
+    //             //     println!("No end quote found");
+    //             //     return;
+    //             // }
+    //             // let title_end = title_start + title_end_index_from_title_start.unwrap();
 
-        // If we didn't find a title, bail out for next loop
-        if maybe_title_marker_index.is_none() {
-            continue;
-        }
+    //             // // The title in raw bytes, we need to check if there are any encoded characters
+    //             // let title_raw = &chunk[title_start..title_end];
 
-        let title_start = maybe_title_marker_index.unwrap() + title_marker.len();
+    //             // let found_encoded_bytes =
+    //             //     title_raw.iter().any(|&byte| byte == b'"' || byte == b'\\');
 
-        // Find the end index of the title value
-        let title_end_index_from_title_start =
-            find_unescaped_double_quote(&line_buffer[title_start..]);
-        if title_end_index_from_title_start.is_none() {
-            continue;
-        }
-        let title_end = title_start + title_end_index_from_title_start.unwrap();
-
-        // The title in raw bytes, we need to check if there are any encoded characters
-        let title_raw = &line_buffer[title_start..title_end];
-
-        let found_encoded_bytes = title_raw.iter().any(|&byte| byte == b'"' || byte == b'\\');
-
-        // If we found any encoded bytes, use simd_json to safely decode the JSON string value
-        if found_encoded_bytes {
-            let title = simd_json::from_slice(&mut line_buffer[title_start - 1..title_end + 1])
-                .unwrap_or(String::new());
-            output_buffered_writer.write(format!("{}\n", title).as_bytes())?;
-        } else {
-            output_buffered_writer.write(title_raw)?;
-            output_buffered_writer.write(&[b'\n'])?;
-        }
-    }
+    //             // // If we found any encoded bytes, use simd_json to safely decode the JSON string value
+    //             // if found_encoded_bytes {
+    //             //     let mut cloned_title = chunk[title_start - 1..title_end + 1].to_vec();
+    //             //     let title = simd_json::from_slice(&mut cloned_title).unwrap_or(String::new());
+    //             //     let _ = output_buffered_writer.write(format!("{}\n", title).as_bytes());
+    //             // } else {
+    //             //     let _ = output_buffered_writer.write(title_raw);
+    //             //     let _ = output_buffered_writer.write(&[b'\n']);
+    //             // }
+    //         });
+    // });
 
     // Flush the writer
     output_buffered_writer.flush()?;
