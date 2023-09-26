@@ -105,3 +105,13 @@
 # C# - dotnet-multi-chunks-custom - single thread
 
 ./bin/Release/net8.0/ParseKata -i ../../../data/ol_dump_works_2022-09-30.txt 5.41s user 2.42s system 73% cpu 10.707 total
+
+# python-single-chunks-json
+
+./parse-kata.py ../../data/ol_dump_works_2022-09-30.txt 196.21s user 9.53s system 95% cpu 3:35.22 total
+avg shared (code): 0 KB
+avg unshared (data/stack): 0 KB
+total (sum): 0 KB
+max memory: 240608 KB
+page faults from disk: 54
+other page faults: 992474
