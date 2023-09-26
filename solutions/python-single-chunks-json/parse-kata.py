@@ -21,14 +21,13 @@ def process_file(inputFilePath: str, outputFilePath: str):
         for line in chunk.values:
             try:
                 book = json.loads(line[0])
+                line[0] = book['title']
+                line_count = line_count + 1
             except Exception as e:
                 print("There was an error extracting the json text.")
                 print(e)
                 print("Error Json text: ", line[0])                
                 error_count = error_count + 1
-            else:
-                line[0] = book['title']
-                line_count = line_count + 1
 
         chunk.to_csv(outputFilePath, mode='a', header=False, index=False, index_label=None, columns=[4])
 
@@ -45,11 +44,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     start_time = time.perf_counter()
-    try:
-        process_file(args.inputFilePath, args.outputFilePath)
-        print(f"Processed file. Titles written to '{args.outputFilePath}'.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+##    try:
+    process_file(args.inputFilePath, args.outputFilePath)
+    print(f"Processed file. Titles written to '{args.outputFilePath}'.")
+##    except Exception as e:
+##        print(f"An error occurred: {e}")
     
     end_time = time.perf_counter()
     print('process completed in ' + str(end_time - start_time)[0:5] + ' seconds.')
