@@ -1,0 +1,1 @@
+ruby parse-kata.rb ..\\..\\samples\\10mb-input.txt ..\\..\\samples\\10mb-input-parsed-Ruby.txt
