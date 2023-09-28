@@ -1,0 +1,1 @@
+python parse-kata.py ..\\..\\samples\\10mb-input.txt ..\\..\\samples\\10mb-input-parsed-Python.txt

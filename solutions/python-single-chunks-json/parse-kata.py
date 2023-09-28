@@ -13,6 +13,9 @@ def process_file(inputFilePath: str, outputFilePath: str):
     error_count: int = 0
     chunk_size: int = 10000
     
+    if os.path.isfile(outputFilePath):
+        os.remove(outputFilePath)
+
     if not os.path.exists(inputFilePath):
         raise FileNotFoundError(f"Input file '{inputFilePath}' does not exist.")
     
@@ -35,6 +38,7 @@ def process_file(inputFilePath: str, outputFilePath: str):
         print("Total json parse errors: ", error_count)
 
     print("Total lines parsed:", line_count)
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Process TSV file with JSON in the last column.')
@@ -44,11 +48,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     start_time = time.perf_counter()
-##    try:
-    process_file(args.inputFilePath, args.outputFilePath)
-    print(f"Processed file. Titles written to '{args.outputFilePath}'.")
-##    except Exception as e:
-##        print(f"An error occurred: {e}")
+    try:
+        process_file(args.inputFilePath, args.outputFilePath)
+        print(f"Processed file. Titles written to '{args.outputFilePath}'.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
     
     end_time = time.perf_counter()
     print('process completed in ' + str(end_time - start_time)[0:5] + ' seconds.')
+
