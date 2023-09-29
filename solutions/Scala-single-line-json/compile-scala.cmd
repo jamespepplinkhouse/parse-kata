@@ -1,0 +1,1 @@
+scalac -cp ".\json.jar" ParseKata.scala
