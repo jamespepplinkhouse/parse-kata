@@ -1,0 +1,1 @@
+scala -cp ".\json.jar" ParseKata.scala d:\Temp\ol_dump_works_2022-09-30.txt d:\Temp\ol_dump_works_2022-09-30-parsed-Scala.txt
