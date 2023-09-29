@@ -1,8 +1,11 @@
 # Python - Lines + JSON implementation
 
-Usage:
-
+## compile
 ```sh
-./parse-kata.scala ../../samples/10mb-input.txt ../../data/python-10mb-output.txt
+scalac -cp ".\json.jar" ParseKata.scala
 ```
-# Before running you will need to add the JSON package to Julia
+## Usage:
+```sh
+./ParseKata.scala ../../samples/10mb-input.txt ../../data/python-10mb-output.txt
+```
+
